@@ -3,12 +3,14 @@ require "./theme"
 module Lister
   class Formatter
     property root : Entry
+    property options : Options
 
-    def initialize(root)
+    def initialize(root, options)
       @root = root
+      @options = options
     end
 
-    def render(options, parent_longest = 0)
+    def render(parent_longest = 0)
       render_recurse @root, options.recurse, parent_longest
     end
 
@@ -40,14 +42,7 @@ module Lister
     end
 
     def console_width
-      # FIXME: Crystal doesn't support Array packing
-      #tiocgwinsz = 0x40087468
-      #str = [0, 0, 0, 0].pack("SSSS")
-      #unless STDOUT.ioctl(tiocgwinsz, str) < 0
-      #  str.unpack("SSSS")[1]
-      #else
-      Int8::MAX
-      #end
+      options.terminal.width
     end
   end
 end

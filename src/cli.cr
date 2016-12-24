@@ -1,6 +1,7 @@
 require "libmagic-crystal/magic"
 
 require "./support/pathname"
+require "./support/terminal"
 require "./formatter"
 require "./entry"
 
@@ -33,7 +34,7 @@ module Lister
       longest = paths.map{|path| path.size }.max
 
       paths.each do |path|
-        Formatter.new(wrap path).render @options, longest
+        Formatter.new(wrap(path), options).render longest
       end
 
     ensure
@@ -66,6 +67,7 @@ module Lister
   class Options
     property recurse : Int8 = 1_i8
     property magic : Magic::Magic
+    property terminal = Terminal
 
     def initialize
       # the default flag sets it to onl return MIME types,
