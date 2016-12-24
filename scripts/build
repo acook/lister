@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+crystal build src/lister.cr -o "bin/lister"
