@@ -11,8 +11,7 @@ module Terminal
       Default = 0x40087468
     end
 
-    # fun ioctl(fd : Int32, tiocgwinsz : TIOCGWINSZ, dimensions : Pointer(Dimensions))
-    fun ioctl(fd : Int32, request : UInt32, ...) : Int32
+    fun ioctl(fd : Int32, command : UInt32, ...) : Int32
   end
 
   STDOUT_FD = 1
@@ -27,17 +26,18 @@ module Terminal
     # TODO: Make this dynamic for other OSes
     tiocgwinsz = C::TIOCGWINSZ::Default
 
+    # ioctl(fd : FD, tiocgwinsz : TIOCGWINSZ, dimensions : Pointer(Dimensions))
     result = C.ioctl STDOUT_FD, tiocgwinsz, pointerof(screen_size)
 
-    if result == -1
+    if result == 0
+      return [screen_size.rows, screen_size.cols]
+    else
       p " -- TIOCGWINSZ = #{tiocgwinsz}"
       p " -- debug: ioctrl failed for some reason"
       err = Errno.new "ioctl failed to get window size"
       p " -- errno: #{err}"
       raise err
       return [UInt16::MAX, UInt16::MAX]
-    else
-      return [screen_size.rows, screen_size.cols]
     end
   end
 end
