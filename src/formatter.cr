@@ -13,17 +13,13 @@ module Lister
     end
 
     def render_recurse(entry, recurse_depth, parent_longest, indent = 0)
-      if entry.directory?
-        unless entry.children_count > 0
-          line entry, parent_longest, indent
-        else
-          line entry, parent_longest, indent
-          entry.children.each do |child|
-            render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)
-          end unless recurse_depth < 1
-        end
+      unless entry.children_count > 0
+        line entry, parent_longest, indent
       else
         line entry, parent_longest, indent
+        entry.children.each do |child|
+          render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)
+        end unless recurse_depth < 1
       end
     end
 
@@ -50,7 +46,7 @@ module Lister
       #unless STDOUT.ioctl(tiocgwinsz, str) < 0
       #  str.unpack("SSSS")[1]
       #else
-        Int8::MAX
+      Int8::MAX
       #end
     end
   end

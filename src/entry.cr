@@ -15,10 +15,10 @@ module Lister
     end
 
     def type
-      if @type
+      if @type != "(unknown)"
         @type
       elsif path.exists?
-        @type = %x[file '#{path}'].gsub(/^#{path}:\s+/, "").strip
+        @type = %x[file '#{path.to_s}'].gsub(/^#{path.to_s}:\s+/, "").strip
       else
         @type = "(FILE NOT FOUND)"
       end
@@ -26,10 +26,6 @@ module Lister
 
     def children
       Array(Entry).new
-    end
-
-    def directory?
-      self.class == Directory
     end
 
     def name
@@ -46,19 +42,17 @@ module Lister
       super *args
 
       @raw_children = path.children || Array(Pathname).new
+
+      @children_count = raw_children.size
+      #rescue Errno::EACCES
+      #  -1
+
+      if children_count > 0
+        @longest = raw_children.map{|c| c.basename.to_s.size }.max
+      end
     end
 
     def children
-      @children ||= get_children
-    end
-
-    def children_count
-      @children_count ||= raw_children.size
-    #rescue Errno::EACCES
-    #  -1
-    end
-
-    def get_children
       dirs  = Array(Directory).new
       files = Array(Entry).new
       raw_children.sort.each do |child|
@@ -70,10 +64,6 @@ module Lister
       end
 
       files + dirs
-    end
-
-    def longest
-      @longest ||= children.map{|c| c.name.size }.max
     end
 
     def type

@@ -11,7 +11,7 @@ module Lister
 
     def parse_args(args)
       skip = nil
-      @paths = args.each_with_object(Array(String).new).with_index do |(arg, path_list), i|
+      args.each.with_index do |arg, i|
         if arg == "-r"
           @options.recurse = Int8::MAX
         elsif arg == "--recurse"
@@ -20,9 +20,11 @@ module Lister
         elsif %w[-h --help].includes? arg
           usage
         elsif skip != i
-          path_list << arg
+          @paths << arg
         end
-      end || Array(String).new
+      end
+
+      @paths << "." if @paths.empty?
 
       self # make chainable since there is no meaningful return value
     end
@@ -38,17 +40,8 @@ module Lister
       print Theme.reset_line
     end
 
-    def paths
-      if @paths.empty?
-        @paths = [Pathname.pwd.to_s]
-      else
-        @paths
-      end
-    end
-
     def wrap(path)
-      path = Pathname.new path
-      if path.directory?
+      if File.directory? path
         Directory.new path
       else
         Entry.new path
