@@ -1,4 +1,4 @@
-#require "libmagic-crystal/magic"
+require "libmagic-crystal/magic"
 
 require "./support/pathname"
 require "./formatter"
@@ -42,9 +42,9 @@ module Lister
 
     def wrap(path)
       if File.directory? path
-        Directory.new path
+        Directory.new path, options
       else
-        Entry.new path
+        Entry.new path, options
       end
     end
 
@@ -67,6 +67,16 @@ module Lister
 
   class Options
     property recurse : Int8 = 1_i8
+    property magic : Magic::Magic
+
+    def initialize
+      # the default flag sets it to onl return MIME types,
+      # which is an extremely limited subset of possible types
+      #flags = Magic::LibMagic::Flags::NONE.to_i
+      # this version also search inside compressed files
+      flags = Magic::LibMagic::Flags::COMPRESS.to_i
+      @magic = Magic::Magic.new flags: flags
+    end
 
     def recurse=(depth)
       @recurse = depth
@@ -74,18 +84,6 @@ module Lister
 
     def recurse?
       @recurse > 0
-    end
-
-    def magic
-      # the default flag sets it to onl return MIME types,
-      # which is an extremely limited subset of possible types
-      #flags = Magic::LibMagic::Flags::NONE.to_i
-      # this version also search inside compressed files
-      #flags = Magic::LibMagic::Flags::COMPRESS.to_i
-      #magic = Magic::Magic.new flags: flags
-
-      # the below line needs to be moved to Entry
-      #magic.file(ARGV.first)
     end
   end
 end

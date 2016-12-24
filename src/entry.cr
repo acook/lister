@@ -1,3 +1,5 @@
+
+
 module Lister
   class Entry
     include Comparable(Entry)
@@ -8,17 +10,22 @@ module Lister
     property raw_children = Array(Pathname).new
     property type = "(unknown)"
     property longest : Int32
+    property options : Options
 
-    def initialize(path_string)
+    def initialize(path_string, options)
       @path = Pathname.new path_string
       @longest = path.path.size
+      @options = options
     end
 
     def type
       if @type != "(unknown)"
         @type
       elsif path.exists?
-        @type = %x[file '#{path.to_s}'].gsub(/^#{path.to_s}:\s+/, "").strip
+        info = options.magic.file path.to_s
+        stripped_info = info.gsub(/^#{path.to_s}:\s+/, "").strip
+
+        @type = stripped_info
       else
         @type = "(FILE NOT FOUND)"
       end
@@ -57,9 +64,9 @@ module Lister
       files = Array(Entry).new
       raw_children.sort.each do |child|
         if child.directory?
-          dirs.push Directory.new child
+          dirs.push Directory.new child, options
         else
-          files.push Entry.new child
+          files.push Entry.new child, options
         end
       end
 
