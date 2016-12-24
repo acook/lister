@@ -6,8 +6,7 @@ Lister TODO
 
 - Figure out the terminal width and truncate long lines
   Crystal lacks Array#pack, so the Ruby code won't work.
-- Figure out the $0 issue
-  Crystal seems to think $0 is always nil or something
+  https://github.com/crystal-lang/crystal/issues/276
 
 Bugs
 ---

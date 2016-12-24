@@ -49,9 +49,7 @@ module Lister
     end
 
     def usage
-      # FIXME: Crystal lacks $0 ?
-      #this = Pathname.new($0 || "lister").basename
-      this = "lister"
+      this = Pathname.new(PROGRAM_NAME).basename.to_s
 
       puts "usage: #{this} [-r] [--recurse DEPTH] [<paths>]"
       puts "\tshows colorized and structured libmagic types"
