@@ -1,0 +1,19 @@
+name: Lister
+version: 0.1.0
+
+authors:
+  - Anthony Michael Cook <github@anthonymcook.com>
+
+description: |
+  Visualize your files on the commandline.
+
+# dependencies:
+#   pg:
+#     github: will/crystal-pg
+#     version: "~> 0.5"
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+license: A2L
