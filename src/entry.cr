@@ -46,14 +46,18 @@ module Lister
     def initialize(*args)
       super *args
 
-      @raw_children = path.children || Array(Pathname).new
+      begin
+        @raw_children = path.children || Array(Pathname).new
+        @children_count = raw_children.size
 
-      @children_count = raw_children.size
-      #rescue Errno::EACCES
-      #  -1
+        if children_count > 0
+          @longest = raw_children.map{|c| c.basename.to_s.size }.max
+        end
+      rescue err : Errno
+        raise err unless err.errno == Errno::EACCES
 
-      if children_count > 0
-        @longest = raw_children.map{|c| c.basename.to_s.size }.max
+        @raw_children = Array(Pathname).new
+        @children_count = -1
       end
     end
 
@@ -76,7 +80,7 @@ module Lister
         super + " (#{children_count})"
       elsif children_count == 0
         super + " (empty)"
-      elsif children_count < 0
+      elsif children_count == -1
         super + " (permission denied)"
       else
         super + " (unknown)"
