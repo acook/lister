@@ -39,6 +39,10 @@ module Lister
 
     ensure
       print Theme.reset_line
+      # HACK: The following is a result of a major bug in Crystal
+      # https://github.com/crystal-lang/crystal/issues/2065
+      STDOUT.blocking = true
+      STDERR.blocking = true
     end
 
     def wrap(path)
