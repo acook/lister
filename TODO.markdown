@@ -11,8 +11,7 @@ Lister TODO
 Bugs
 ---
 
-- Either `whatkind` or `lister` causes mild issues with `less`/`more` and `vim`
-  I think it's `whatkind` but more testing is needed.
+- Causes redraw issues with subsequent `less`/`more` and `vim`
 
 Planned
 -------
@@ -25,6 +24,6 @@ Planned
 - Option to display creation/modification/access times
 - Option to display unix attributes user/group/r/w/x
 - flag executable files somehow
-- Extended color palettes
+- Extended color palettes (256/True Color)
 - Configurable themes
 - When Crystal supports Windows, make the PATH_SEP autodetect
