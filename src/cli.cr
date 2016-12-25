@@ -67,7 +67,7 @@ module Lister
   class Options
     property recurse : Int8 = 1_i8
     property magic : Magic::Magic
-    property terminal = Terminal
+    property terminal = Terminal.new
 
     def initialize
       # the default flag sets it to onl return MIME types,
