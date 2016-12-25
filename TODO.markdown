@@ -9,7 +9,7 @@ Lister TODO
 Bugs
 ---
 
-- Causes redraw issues with subsequent `less`/`more` and `vim`
+(none?)
 
 Planned
 -------
