@@ -53,6 +53,10 @@ class Pathname
     File.exists? path
   end
 
+  def symlink?
+    File.symlink? path
+  end
+
   def <=>(other)
     path <=> other.path
   end

@@ -4,7 +4,7 @@ Lister TODO
 `whatkind` Parity
 -----------------
 
-- Display broken symlinks as symlinks and not as missing files
+(none?)
 
 Bugs
 ---

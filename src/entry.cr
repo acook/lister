@@ -16,14 +16,12 @@ module Lister
       @path = Pathname.new path_string
       @longest = path.path.size
       @options = options
-    end
 
-    def type
-      if @type != "(unknown)"
-        @type
-      elsif path.exists?
-        info = options.magic.file path.to_s
-        stripped_info = info.gsub(/^#{path.to_s}:\s+/, "").strip
+      if path.exists? || path.symlink?
+        # broken symlinks return false from exists? but
+        # libmagic still provides useful info for them
+        raw_info      = options.magic.file path.to_s
+        stripped_info = raw_info.sub(/^#{path.to_s}:\s+/, "").strip
 
         @type = stripped_info
       else
