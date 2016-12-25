@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-crystal build src/lister.cr -o "bin/lister"
+crystal build src/lister.cr -o "bin/lister" | tee /dev/null
