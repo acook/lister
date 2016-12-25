@@ -22,6 +22,11 @@ class Terminal
   end
 
   property tiocgwinsz : TIOCGWINSZ = get_tiocgwinsz
+  property fd : FD = FD::STDOUT
+
+  def initialize(fd = FD::STDOUT)
+    @fd = fd
+  end
 
   def width
     size.last
@@ -30,17 +35,20 @@ class Terminal
   def size
     dimensions = C::Dimensions.new
     # ioctl(fd : FD, tiocgwinsz : TIOCGWINSZ, dimensions : Pointer(Dimensions))
-    result = C.ioctl FD::STDOUT, tiocgwinsz, pointerof(dimensions)
+    result = C.ioctl fd, tiocgwinsz, pointerof(dimensions)
 
     if result == 0
       [dimensions.rows, dimensions.cols]
     else
-      p " -- TIOCGWINSZ = #{tiocgwinsz}"
-      p " -- debug: ioctrl failed for some reason"
       err = Errno.new "ioctl failed to get window size"
-      p " -- errno: #{err}"
-      raise err
-      [UInt16::MAX, UInt16::MAX]
+      #p " -- debug: ioctrl failed for some reason"
+      #p " -- errno: #{err}"
+      #p " -- TIOCGWINSZ = #{tiocgwinsz}"
+      if err.errno == Errno::ENOTTY
+        [UInt16::MAX, UInt16::MAX]
+      else
+        raise err
+      end
     end
   end
 
