@@ -4,9 +4,7 @@ Lister TODO
 `whatkind` Parity
 -----------------
 
-- Figure out the terminal width and truncate long lines
-  Crystal lacks Array#pack, so the Ruby code won't work.
-  https://github.com/crystal-lang/crystal/issues/276
+- Display broken symlinks as symlinks and not as missing files
 
 Bugs
 ---
