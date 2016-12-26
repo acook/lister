@@ -55,6 +55,8 @@ module Themer
       pack = ""
       fg_rgb_flag = false
       bg_rgb_flag = false
+      fg_256_flag = false
+      bg_256_flag = false
       skip = false
       fg_rgb = Array(Int32).new
       bg_rgb = Array(Int32).new
@@ -71,22 +73,42 @@ module Themer
 
           if i == 3 # single digit, probably a style
             colors.style =  STYLES[num]
-          elsif num == 38 # fg extended true color
-            fg_rgb_flag = true
+          elsif num == 38 # fg extended
             skip = :fg
-          elsif num == 48 # bg extended true color
-            bg_rgb_flag = true
+          elsif num == 48 # bg extended
             skip = :bg
-          elsif num == 2 && skip # rgb requires this, but we don't
+          elsif num == 2 && skip # true color
+            if skip == :bg
+              bg_rgb_flag = true
+            elsif skip == :fg
+              fg_rgb_flag = true
+            else
+              raise "what is this i dont even (true) SKIP=#{skip.inspect}"
+            end
             skip = false
-          elsif fg_rgb_flag # store fg rgb color
+          elsif num == 5 && skip # 256 color
+            if skip == :bg
+              bg_256_flag = true
+            elsif skip == :fg
+              fg_256_flag = true
+            else
+              raise "what is this i dont even (256) SKIP=#{skip.inspect}"
+            end
+            skip = false
+          elsif fg_rgb_flag # store fg true color
             fg_rgb << num
-          elsif bg_rgb_flag # store bg rgb color
+          elsif bg_rgb_flag # store bg true color
             bg_rgb << num
+          elsif fg_256_flag # store fg 256 color
+            colors.fg = num
+          elsif bg_256_flag # store bg 256 color
+            colors.bg = num
           elsif num < 38 && num > 29 # it's a fg color
             colors.fg = COLORS[num - 30]
           elsif num < 48 && num > 39 # it's a bg color
             colors.bg = COLORS[num - 40]
+          else
+            raise "what is this i dont even (else) CHR=#{chr.inspect}"
           end
 
           pack = ""
@@ -213,8 +235,13 @@ module Themer
 end
 
 theme = Themer.create do
+  # style only
   for "reset", style: :normal
+  # 16 colors
   for "err", bg: :red, style: :bold, fg: :white
+  # 256 color
+  for "thehellofit", bg: 33
+  # true color
   for "lookatme", fg: "#de1e7e", style: :bold
   for "foo", fg: "#BADA55"
   for "bar", fg: "#e1e100"
@@ -228,4 +255,6 @@ theme = Themer::Theme.load "mytheme.theme"
 print theme["err"],      "DANGER WILL ROBINSON DANGER DANGER", theme.reset, '\n'
 print theme["lookatme"], "EXTERMINATE ANNIHILATE DESTROY",     theme.reset, '\n'
 print theme["foo"], "foo ", theme["bar"], "bar ", theme["baz"], "baz ", theme["qux"], "qux "
+print theme.reset, '\n'
+print theme["thehellofit"], "ABCDEFGHIJKLMNOP"
 print theme.reset, '\n'
