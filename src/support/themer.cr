@@ -1,22 +1,19 @@
-class Themer
+module Themer
   def self.create
     td = ThemeDefiner.new
     new_theme = with td yield td
     new_theme
   end
 
-  COLOR = (Symbol | Int | String | Nil)
-  STYLE = (Symbol | Nil)
+  alias COLOR = Symbol | Int32 | String | Nil
+  alias STYLE = Symbol | Nil
 
   class Colors
     property codes : String
 
-    def initialize(
-      bg : (Symbol | Int | String | Nil) = nil,
-      fg : (Symbol | Int | String | Nil) = nil,
-      style : (Symbol | Nil) = nil
-    )
+    def initialize(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
       @codes = "\033["
+
       if style
         @codes += s style
         @codes +=  ";"
@@ -70,13 +67,9 @@ class Themer
   class ThemeDefiner
     property theme = Hash(Symbol, Colors).new
 
-    def for(
-      identifier : Symbol,
-      bg : (Symbol | Int | String | Nil) = nil,
-      fg : (Symbol | Int | String | Nil) = nil,
-      style : (Symbol | Nil) = nil)
+    def for(id : Symbol, bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
       colors = Colors.new bg: bg, fg: fg, style: style
-      @theme[identifier] = colors
+      @theme[id] = colors
       @theme
     end
   end
