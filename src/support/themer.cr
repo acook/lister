@@ -14,7 +14,7 @@ module Themer
     property codes : String = ""
 
     def set(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      @codes = "\033["
+      @codes = "\e["
 
       if style
         @codes += "#{s style};"
@@ -43,6 +43,93 @@ module Themer
       self # return self for chaining
     end
 
+    def parse(code : String) : ThemeColors | NoReturn
+      raise ArgumentError.new(
+        "doesn't begin with escape sequence, got #{code[0].inspect} instead"
+      ) unless code[0] == '\e'
+      raise ArgumentError.new(
+        "doesn't begin with esc and bracket, got #{code[1].inspect} instead"
+      ) unless code[1] == '['
+
+      colors = ThemeColors.new
+      pack = ""
+      fg_rgb_flag = false
+      bg_rgb_flag = false
+      skip = false
+      fg_rgb = Array(Int32).new
+      bg_rgb = Array(Int32).new
+      last = -1
+
+      code.each_char_with_index do |chr, i|
+        last += 1
+        next if i < 2
+
+        if chr.ascii_number?
+          pack += chr
+        elsif chr == ';'
+          num = pack.to_i
+
+          if i == 3 # single digit, probably a style
+            colors.style =  STYLES[num]
+          elsif num == 38 # fg extended true color
+            fg_rgb_flag = true
+            skip = :fg
+          elsif num == 48 # bg extended true color
+            bg_rgb_flag = true
+            skip = :bg
+          elsif num == 2 && skip # rgb requires this, but we don't
+            skip = false
+          elsif fg_rgb_flag # store fg rgb color
+            fg_rgb << num
+          elsif bg_rgb_flag # store bg rgb color
+            bg_rgb << num
+          elsif num < 38 && num > 29 # it's a fg color
+            colors.fg = COLORS[num - 30]
+          elsif num < 48 && num > 39 # it's a bg color
+            colors.bg = COLORS[num - 40]
+          end
+
+          pack = ""
+        elsif chr == 'm'
+          break # end of sequence
+        else
+          raise ArgumentError.new(
+            "unrecognized character, expected digit, semicolon, or 'm' but got #{chr.inspect} instead"
+          )
+        end
+
+        if fg_rgb.size > 3
+          raise "too many fg args"
+        elsif bg_rgb.size > 3
+          raise "too many bg args"
+        end
+      end
+
+      if fg_rgb_flag
+        fg = "#"
+        fg_rgb.each do |n|
+          fg += n.to_s(16).rjust(2,'0')
+        end
+        colors.fg = fg
+      end
+
+      if bg_rgb_flag
+        bg = "#"
+        bg_rgb.each do |n|
+          bg += n.to_s(16).rjust(2,'0')
+        end
+        colors.bg = bg
+      end
+
+      raise(
+        "more data at the end of the escape sequence " \
+        "LAST=#{last} TOTAL=#{code.size} " \
+        "DATA=#{code[last, code.size - 1].inspect}"
+      ) if (last + 1) < code.size
+
+      colors
+    end
+
     def to_s(io)
       io.print @codes
     end
@@ -69,6 +156,12 @@ module Themer
 
     COLORS = %i[black red green yellow blue magenta cyan white extended default]
     STYLES = %i[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
+
+    class ThemeColors
+      property bg : COLOR
+      property fg : COLOR
+      property style : STYLE
+    end
   end
 
   class ThemeDefiner
@@ -92,7 +185,12 @@ module Themer
 
       data = Hash(String, Colors).new
       yaml.as_h.each do |k,v|
-        data[k.to_s] = Colors.new.tap{|c| c.codes = v.to_s }
+        #colors = Colors.new.tap{|c| c.codes = v.to_s }
+        colors = Colors.new.tap do |c|
+          tc = c.parse v.to_s
+          c.set bg: tc.bg, fg: tc.fg, style: tc.style
+        end
+        data[k.to_s] = colors
       end
 
       self.new.tap{|t| t.store = data }
@@ -131,4 +229,3 @@ print theme["err"],      "DANGER WILL ROBINSON DANGER DANGER", theme.reset, '\n'
 print theme["lookatme"], "EXTERMINATE ANNIHILATE DESTROY",     theme.reset, '\n'
 print theme["foo"], "foo ", theme["bar"], "bar ", theme["baz"], "baz ", theme["qux"], "qux "
 print theme.reset, '\n'
-
