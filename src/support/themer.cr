@@ -57,13 +57,14 @@ module Themer
       bg_rgb_flag = false
       fg_256_flag = false
       bg_256_flag = false
-      skip = false
+      fg = false
+      bg = false
       fg_rgb = Array(Int32).new
       bg_rgb = Array(Int32).new
-      last = -1
+      last = 0
 
       code.each_char_with_index do |chr, i|
-        last += 1
+        last = i
         next if i < 2
 
         if chr.ascii_number?
@@ -71,49 +72,58 @@ module Themer
         elsif chr == ';'
           num = pack.to_i
 
-          if i == 3 # single digit, probably a style
-            colors.style =  STYLES[num]
+          if false # I wonder if this gets optimized out...
+
+          # switches for 256 and true color
           elsif num == 38 # fg extended
-            skip = :fg
+            fg = true
           elsif num == 48 # bg extended
-            skip = :bg
-          elsif num == 2 && skip # true color
-            if skip == :bg
-              bg_rgb_flag = true
-            elsif skip == :fg
-              fg_rgb_flag = true
-            else
-              raise "what is this i dont even (true) SKIP=#{skip.inspect}"
-            end
-            skip = false
-          elsif num == 5 && skip # 256 color
-            if skip == :bg
-              bg_256_flag = true
-            elsif skip == :fg
-              fg_256_flag = true
-            else
-              raise "what is this i dont even (256) SKIP=#{skip.inspect}"
-            end
-            skip = false
+            bg = true
+          elsif num == 5 && fg # fg 256 color
+            fg_256_flag = true
+            fg = false
+          elsif num == 5 && bg # bg 256 color
+            bg_256_flag = true
+            bg = false
+          elsif num == 2 && fg # fg true color
+            fg_rgb_flag = true
+            fg = false
+          elsif num == 2 && bg # bg true color
+            bg_rgb_flag = true
+            bg = false
+
+          # 256 and true color codes
+          elsif fg_256_flag # store fg 256 color
+            colors.fg = num
+            fg_256_flag = false
+          elsif bg_256_flag # store bg 256 color
+            colors.bg = num
+            bg_256_flag = false
           elsif fg_rgb_flag # store fg true color
             fg_rgb << num
           elsif bg_rgb_flag # store bg true color
             bg_rgb << num
-          elsif fg_256_flag # store fg 256 color
-            colors.fg = num
-          elsif bg_256_flag # store bg 256 color
-            colors.bg = num
+
+          # 16 color codes
           elsif num < 38 && num > 29 # it's a fg color
             colors.fg = COLORS[num - 30]
           elsif num < 48 && num > 39 # it's a bg color
             colors.bg = COLORS[num - 40]
+
+          # styles, we have to do these last!
+          # there are technically other styles,
+          # but we only care about the first 10
+          elsif num <= 10 # it's a style! hopefully
+            colors.style = STYLES[num]
+
+          # if all else fails... PANIC!
           else
-            raise "what is this i dont even (else) CHR=#{chr.inspect}"
+            raise "what is this i dont even PACK=#{pack.inspect}"
           end
 
-          pack = ""
+          pack = "" # reset the string for the next go-round
         elsif chr == 'm'
-          break # end of sequence
+          break # end of sequence, probably
         else
           raise ArgumentError.new(
             "unrecognized character, expected digit, semicolon, or 'm' but got #{chr.inspect} instead"
@@ -147,7 +157,7 @@ module Themer
         "more data at the end of the escape sequence " \
         "LAST=#{last} TOTAL=#{code.size} " \
         "DATA=#{code[last, code.size - 1].inspect}"
-      ) if (last + 1) < code.size
+      ) if (last + 1) < code.size # maybe it wasn't the end of the sequence??
 
       colors
     end
