@@ -276,6 +276,7 @@ module Themer
       ids.find do |id|
         found = store.fetch id, nil
       end
+
       if found
         found
       elsif default

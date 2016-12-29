@@ -86,8 +86,7 @@ module FT
     type :socket, :unix
 
     type :image, nil
-    type :gif, :image
-      /GIF/
+    type :gif, :image, /GIF/
     type :jpg, :image
   end
 
