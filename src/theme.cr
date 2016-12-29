@@ -27,22 +27,6 @@ module Lister
         for "doom", style: :bold, fg: :green
     end
 
-    DEFAULT_TYPES = Hash(Regex, FT::Node).new.merge({
-      /broken|NOT FOUND|cannot open/ => FT[:broken],
-      /directory/        => FT[:directory],
-      /link|socket/      => FT[:unix],
-      /bash|Bourne/      => FT[:bash],
-      /zsh/              => FT[:zsh],
-      /shell|SHELL/      => FT[:shell],
-      /perl/             => FT[:perl],
-      /ruby|Ruby/        => FT[:ruby],
-      /python/           => FT[:python],
-      /x86|i386/         => FT[:x86],
-      /program/          => FT[:program],
-      /GIF/              => FT[:gif],
-      /doom|PWAD/        => FT[:wad]
-    })
-
     property entry : Entry
 
     def initialize(entry)
@@ -50,21 +34,10 @@ module Lister
     end
 
     def color
-      theme.get_any styles.map{|s| s.to_s.downcase }
-    end
-
-    def styles
-      types.find do |regex, t|
-        if regex =~ @entry.type
-          return t.list
-        end
+      types = FT.match do |r|
+        r =~ @entry.type
       end
-
-      Array(String).new
-    end
-
-    def types
-      DEFAULT_TYPES
+      theme.get_any types
     end
 
     def theme
