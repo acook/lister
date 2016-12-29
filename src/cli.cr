@@ -2,8 +2,10 @@ require "libmagic-crystal/magic"
 
 require "./support/pathname"
 require "./support/terminal"
+require "./support/themer"
 require "./formatter"
 require "./entry"
+require "./file_type"
 
 module Lister
   class CLI
@@ -78,9 +80,35 @@ module Lister
   #   in lieu of globals or tons of extraneous arguments
   # this object stores the commandline options and the interface to libmagic
   class Options
+
+    DEFAULT_THEME = Themer.create do
+      default style: :normal
+      for "broken", bg: :red
+      for "directory", style: :bold, fg: :black
+      for "source", fg: :white
+        for "shell", fg: :magenta
+          #for "bash", fg: :green
+          #for "zsh", fg: :blue
+        for "script", fg: :white
+          for "perl", fg: :yellow
+          for "ruby", fg: :red
+      for "program", fg: :blue
+        # x86
+        # arm
+      for "unix", fg: :yellow
+        # link
+        # socket
+      for "image", style: :bold, fg: :magenta
+        # gif
+        # jpeg
+      for "compressed", style: :bold
+        for "doom", style: :bold, fg: :green
+    end
+
     property recurse : Int8 = 1_i8
     property magic : Magic::Magic
     property terminal = Terminal.new
+    property theme : Themer::Theme = DEFAULT_THEME
 
     def initialize
       # the default flags set it to only return MIME types,

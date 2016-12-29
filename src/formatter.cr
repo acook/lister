@@ -1,5 +1,3 @@
-require "./theme"
-
 module Lister
   class Formatter
     property root : Entry
@@ -30,7 +28,14 @@ module Lister
       if text.size > console_width
         text = text[0,(console_width-1)] + "…"
       end
-      print Theme.new(entry).color, text, Themer.reset, "\n"
+      print color(entry), text, Themer.reset, "\n"
+    end
+
+    def color(entry)
+      types = FT.match do |r|
+        r =~ entry.type
+      end
+      options.theme.get_any types
     end
 
     def indentation(size)
