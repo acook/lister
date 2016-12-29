@@ -1,55 +1,73 @@
+require "./support/themer"
+
 module Lister
   class Theme
-    module Color
-      def reset_line
-        "\033[0m\033[K"
-      end
-
-      def fg(color_name)
-        esc style(:normal), "3#{color color_name}"
-      end
-
-      def fgb(color_name)
-        esc style(:bright), "3#{color color_name}"
-      end
-
-      def bg(color_name)
-        esc style(:normal), "4#{color color_name}"
-      end
-
-      def esc(style, color_code)
-        "\033[#{style};#{color_code}m"
-      end
-
-      def color(name)
-        COLORS.index name
-      end
-
-      def style(name)
-        STYLES.index name
-      end
-
-      COLORS = %i[black red green yellow blue magenta cyan white]
-      STYLES = %i[normal bright underlined]
+    DEFAULT_THEME = Themer.create do
+      default style: :normal
+      for "broken", bg: :red
+      for "directory", style: :bold, fg: :black
+      for "source", fg: :white
+        for "shell", fg: :magenta
+          #for "bash", fg: :green
+          #for "zsh", fg: :blue
+        for "script", fg: :white
+          for "perl", fg: :yellow
+          for "ruby", fg: :red
+      for "program", fg: :blue
+        # x86
+        # arm
+      for "unix", fg: :yellow
+        # link
+        # socket
+      for "image", style: :bold, fg: :magenta
+        # gif
+        # jpeg
+      for "compressed", style: :bold
+        for "doom", style: :bold, fg: :green
     end
 
-    extend Color
+    enum Types
+      Default
+      Directory
+      Broken
 
-    COLOR_MAP = {
-      /broken|NOT FOUND|cannot open/ => bg(:red),
-      /bash|Bourne/      => fg(:green),
-      /zsh/              => fg(:blue),
-      /shell|SHELL/      => fg(:magenta),
-      /perl/             => fg(:yellow),
-      /ruby|Ruby/        => fg(:red),
-      /python/           => fg(:cyan),
-      /x86|i386/         => fgb(:blue),
-      /link|socket/      => fgb(:yellow),
-      /directory/        => fgb(:black),
-      /program/          => fgb(:yellow),
-      /GIF/              => fgb(:magenta),
-      /doom|PWAD/        => fgb(:green),
-    }
+      Source
+        Shell
+          Bash
+          Zsh
+        Script
+          Ruby
+          Perl
+          Python
+      Program
+        X86
+        ARM
+      Unix
+        Link
+        Socket
+      Image
+        GIF
+        JPEG
+      Compressed
+        Zip
+        Wad
+    end
+
+    DEFAULT_TYPES = Hash(Regex, Array(Types)).new.merge({
+      /broken|NOT FOUND|cannot open/ => [Types::Broken],
+      /bash|Bourne/      => [Types::Bash, Types::Shell, Types::Source],
+      /zsh/              => [Types::Zsh, Types::Shell, Types::Source],
+      /shell|SHELL/      => [Types::Shell, Types::Source],
+      /perl/             => [Types::Perl, Types::Script, Types::Source],
+      /ruby|Ruby/        => [Types::Ruby, Types::Script, Types::Source],
+      /python/           => [Types::Python, Types::Script, Types::Source],
+      /x86|i386/         => [Types::X86, Types::Program],
+      /link|socket/      => [Types::Link, Types::Socket, Types::Unix],
+      /directory/        => [Types::Directory],
+      /program/          => [Types::Program],
+      /GIF/              => [Types::GIF, Types::Image],
+      /doom|PWAD/        => [Types::Wad, Types::Compressed],
+    })
 
     property entry : Entry
 
@@ -58,10 +76,26 @@ module Lister
     end
 
     def color
-      COLOR_MAP.find do |regex, ansi|
-        break ansi if regex =~ @entry.type
-      end || "\033[0m"
+      theme.get_any styles.map{|s| s.to_s.downcase }
     end
 
+    def styles
+      s = types.find do |regex, styles|
+        regex =~ @entry.type
+      end
+      if s
+        s.last
+      else
+        Array(Types).new
+      end
+    end
+
+    def types
+      DEFAULT_TYPES
+    end
+
+    def theme
+      DEFAULT_THEME
+    end
   end
 end
