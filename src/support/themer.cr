@@ -250,8 +250,43 @@ module Themer
       end
     end
 
-    def [](id : String) : Colors | NoReturn
-      store[id] || raise ArgumentError.new("id not found #{id.inspect}")
+    def get(id : String) : Colors | NoReturn
+      default = @default  # so the ivar doesn't change during execution
+      if default.nil?
+        store[id] || raise ArgumentError.new("id not found #{id.inspect}")
+      else
+        store.fetch id, default
+      end
+
+      default = @default
+      color = store.fetch id, false
+
+      if found
+        found
+      elsif default
+        default
+      else
+        raise ArgumentError.new "#{self.class}#get color id not found #{id.inspect}"
+      end
+    end
+
+    def get_any(ids : Array(String)) : Colors | Nil
+      default = @default
+      found = nil
+      ids.find do |id|
+        found = store.fetch id, nil
+      end
+      if found
+        found
+      elsif default
+        default
+      else
+        raise ArgumentError.new("#{self.class}#get_any no match found for color ids #{ids.inspect}")
+      end
+    end
+
+    def [](id : String) : Colors
+      store[id]
     end
 
     def []=(id : String, seq : Colors)
