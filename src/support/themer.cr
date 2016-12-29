@@ -298,30 +298,3 @@ module Themer
     Colors.new.set style: :normal
   end
 end
-
-theme = Themer.create do
-  default style: :italic
-  # style only
-  for "reset", style: :normal
-  # 16 colors
-  for "err", bg: :red, style: :bold, fg: :white
-  # 256 color
-  for "thehellofit", bg: 33
-  # true color
-  for "lookatme", fg: "#de1e7e", style: :bold
-  for "foo", fg: "#BADA55"
-  for "bar", fg: "#e1e100"
-  for "baz", fg: "#c0ffee"
-  for "qux", fg: "#1CE1CE"
-end
-
-theme.save "mytheme.theme"
-theme = Themer::Theme.load "mytheme.theme"
-
-print theme["err"],      "DANGER WILL ROBINSON DANGER DANGER", theme.reset, '\n'
-print theme["lookatme"], "EXTERMINATE ANNIHILATE DESTROY",     theme.reset, '\n'
-print theme["foo"], "foo ", theme["bar"], "bar ", theme["baz"], "baz ", theme["qux"], "qux "
-print theme.reset, '\n'
-print theme["thehellofit"], "ABCDEFGHIJKLMNOP", theme.reset, '\n'
-print theme.default, "waddabeat"
-print theme.reset, '\n'
