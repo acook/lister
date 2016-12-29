@@ -7,10 +7,9 @@ module Themer
     new_theme
   end
 
-  alias COLOR = Symbol | Int32 | String | Nil
-  alias STYLE = Symbol | Nil
+  alias STYLE = String | Nil
   alias CTrue = String | Nil
-  alias C16   = Symbol | Nil
+  alias C16   = String | Nil
   alias C256  = Int8   | Nil
 
   class Colors
@@ -30,11 +29,11 @@ module Themer
       fg256 : C256  = nil, bg256 : C256  = nil
     )
 
-      @style = style if style
-      @fg    = fg    if fg
-      @bg    = bg    if bg
-      @fg16  = fg16  if fg16
-      @bg16  = bg16  if bg16
+      @style = style if style && !style.empty?
+      @fg    = fg    if fg    && !fg.empty?
+      @bg    = bg    if bg    && !bg.empty?
+      @fg16  = fg16  if fg16  && !fg16.empty?
+      @bg16  = bg16  if bg16  && !bg16.empty?
       @fg256 = fg256 if fg256
       @bg256 = bg256 if bg256
 
@@ -72,15 +71,15 @@ module Themer
       @codes = new_codes
     end
 
-    def s(name : Symbol)
+    def s(name : STYLE)
       STYLES.index name || raise "style not found: #{name.inspect}"
     end
 
-    def c16(name : Symbol)
-      COLORS.index name || raise "color not found: #{name.inspect}"
+    def c16(name : C16)
+      COLORS.index name || 0
     end
 
-    def ct(indicator : String)
+    def ct(indicator : CTrue)
       if indicator[0] == '#'
         hex indicator
       else
@@ -104,12 +103,24 @@ module Themer
       io.print codes
     end
 
-    def to_yaml(*args)
-      codes.to_yaml *args
+    def to_hash
+      {
+        style: style,
+        fg: fg,
+        bg: bg,
+        fg256: fg256,
+        bg256: bg256,
+        fg16: fg16,
+        bg16: bg16
+      }
     end
 
-    COLORS = %i[black red green yellow blue magenta cyan white extended default]
-    STYLES = %i[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
+    def to_yaml(*args)
+      to_hash.to_yaml *args
+    end
+
+    COLORS = %w[black red green yellow blue magenta cyan white extended default]
+    STYLES = %w[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
   end
 
   class Builder
@@ -129,6 +140,20 @@ module Themer
       @theme
     end
 
+    def for( id : String,
+      style : Symbol = nil,
+      fg    : CTrue = nil, bg    : CTrue = nil,
+      fg16  : Symbol   = nil, bg16  : Symbol   = nil,
+      fg256 : C256  = nil, bg256 : C256  = nil
+    )
+      colors = Colors.new.set style: (style && style.to_s).as(String | Nil),
+        fg:    fg,    bg:    bg,
+        fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
+        fg256: fg256, bg256: bg256
+      @theme[id] = colors
+      @theme
+    end
+
     def default(
       style : STYLE = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
@@ -140,24 +165,41 @@ module Themer
         fg16:  fg16,  bg16:  bg16,
         fg256: fg256, bg256: bg256
     end
+
+    def default(
+      style : Symbol = nil,
+      fg    : CTrue = nil, bg    : CTrue = nil,
+      fg16  : Symbol   = nil, bg16  : Symbol   = nil,
+      fg256 : C256  = nil, bg256 : C256  = nil
+    )
+      @theme.default = Colors.new.set style: (style && style.to_s).as(String | Nil),
+        fg:    fg,    bg:    bg,
+        fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
+        fg256: fg256, bg256: bg256
+    end
   end
 
   class Theme
     property store = Hash(String, Colors).new
-    property reset : Colors = Colors.new.set style: :normal
+    property reset : Colors = Colors.new.set style: "normal"
     property default : Colors | Nil
 
     def self.load(filename)
-      yaml = File.open filename do |file|
-        YAML.parse(file)
+      yaml = Hash(String, Hash(String, CTrue | C256 | C16)).new
+
+      File.open filename do |file|
+        yaml = YAML.parse(file)#.as Hash
+        #(String, Hash(String, String | Int8 | Nil))
       end
 
       per_def = nil
       data = Hash(String, Colors).new
-      yaml.as_h.each do |k,v|
+      yaml.each do |k,v|
         colors = Colors.new.tap do |c|
-          tc = c.parse v.to_s
-          c.set bg: tc.bg, fg: tc.fg, style: tc.style
+          c.set style: v["style"].as(STYLE),
+            fg:    v["fg"].to_s,    bg:    v["bg"].to_s,
+            fg16:  v["fg16"].to_s,  bg16:  v["bg16"].to_s,
+            fg256: v["fg256"].as(Int8), bg256: v["bg256"].as(Int8)
         end
 
         if k.to_s == "DEFAULT"
@@ -228,6 +270,6 @@ module Themer
   end
 
   def self.reset
-    Colors.new.set style: :normal
+    Colors.new.set style: "normal"
   end
 end

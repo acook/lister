@@ -8,9 +8,9 @@ describe Themer do
       # style only
       for "reset", style: :normal
       # 16 colors
-      for "err", bg: :red, style: :bold, fg: :white
+      for "err", bg16: :red, style: :bold, fg16: :white
       # 256 color
-      for "thehellofit", bg: 33
+      for "thehellofit", bg256: 33.to_i8
       # true color
       for "lookatme", fg: "#de1e7e", style: :bold
       for "foo", fg: "#BADA55"
@@ -29,7 +29,7 @@ describe Themer do
 
     theme.reset.codes.should eq theme["reset"].codes
 
-    theme["err"].codes.should eq "\e[1;41;37;m"
+    theme["err"].codes.should eq "\e[1;37;41;m"
     theme["thehellofit"].codes.should eq "\e[48;5;33;m"
     theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126;m"
 
