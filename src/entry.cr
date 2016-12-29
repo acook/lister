@@ -3,6 +3,7 @@ module Lister
   # it wraps the Pathname object which is essentially just
   #   convinience methods over String, File, and Dir
   class Entry
+    # this combined with <=> makes Entries sortable
     include Comparable(Entry)
 
     property path : Pathname
@@ -18,18 +19,19 @@ module Lister
       @longest = path.path.size.to_i16
       @options = options
 
+      # broken symlinks return false from exists? but
+      # libmagic still provides useful info for them
       if path.exists? || path.symlink?
-        # broken symlinks return false from exists? but
-        # libmagic still provides useful info for them
-        raw_info      = options.magic.file path.to_s
-        stripped_info = raw_info.sub(/^#{path.to_s}:\s+/, "").strip
-
-        @type = stripped_info
+        raw_type = options.magic.file path.to_s
+        # remove the full path prefix from libmagic's result
+        @type = raw_type.sub(/^#{path.to_s}:\s+/, "").strip
       else
+        # this will happen if the user specifies a nonexistent file
         @type = "(FILE NOT FOUND)"
       end
     end
 
+    # normal Entry objects don't have Children, so return an empty array
     def children
       Array(Entry).new
     end
@@ -38,6 +40,8 @@ module Lister
       @path.expand_path.basename.to_s
     end
 
+    # sort files by name
+    # this will probably be configurable later
     def <=>(other)
       self.name <=> other
     end
@@ -57,11 +61,13 @@ module Lister
       rescue err : Errno
         raise err unless err.errno == Errno::EACCES
 
-        @raw_children = Array(Pathname).new
+        # if we get here it's because we don't have the permissions
+        #   to access this directory, set this so we can use it later
         @children_count = -1
       end
     end
 
+    # get the files in this directory
     def children
       dirs  = Array(Directory).new
       files = Array(Entry).new
@@ -73,9 +79,11 @@ module Lister
         end
       end
 
+      # this ensures that directories are listed last
       files + dirs
     end
 
+    # suffix information about the directory onto the type
     def type
       if children_count > 0
         super + " (#{children_count})"
