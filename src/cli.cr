@@ -38,7 +38,7 @@ module Lister
       end
 
     ensure
-      print Theme.reset_line
+      print Themer.reset
       # HACK: The following is a result of a major bug in Crystal
       # https://github.com/crystal-lang/crystal/issues/2065
       STDOUT.blocking = true

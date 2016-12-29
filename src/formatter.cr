@@ -30,7 +30,7 @@ module Lister
       if text.size > console_width
         text = text[0,(console_width-1)] + "…"
       end
-      print Theme.new(entry).color, text, Theme.reset_line, "\n"
+      print Theme.new(entry).color, text, Themer.reset, "\n"
     end
 
     def indentation(size)

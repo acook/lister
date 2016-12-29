@@ -242,6 +242,10 @@ module Themer
       store[id] = seq || raise ArgumentError.new("key cannot be nil")
     end
   end
+
+  def self.reset
+    Colors.new.set style: :normal
+  end
 end
 
 theme = Themer.create do
