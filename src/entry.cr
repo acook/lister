@@ -1,6 +1,7 @@
-
-
 module Lister
+  # the Entry class represents a single file in a directory
+  # it wraps the Pathname object which is essentially just
+  #   convinience methods over String, File, and Dir
   class Entry
     include Comparable(Entry)
 
@@ -8,13 +9,13 @@ module Lister
     property children = Array(Entry).new
     property children_count = 0
     property raw_children = Array(Pathname).new
-    property type = "(unknown)"
-    property longest : Int32
+    property type : String
+    property longest : Int16
     property options : Options
 
     def initialize(path_string, options)
       @path = Pathname.new path_string
-      @longest = path.path.size
+      @longest = path.path.size.to_i16
       @options = options
 
       if path.exists? || path.symlink?
@@ -51,7 +52,7 @@ module Lister
         @children_count = raw_children.size
 
         if children_count > 0
-          @longest = raw_children.map{|c| c.basename.to_s.size }.max
+          @longest = raw_children.map{|c| c.basename.to_s.size }.max.to_i16
         end
       rescue err : Errno
         raise err unless err.errno == Errno::EACCES
