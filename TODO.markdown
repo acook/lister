@@ -1,15 +1,11 @@
 Lister TODO
 ===========
 
-`whatkind` Parity
------------------
-
-(none?)
-
 Bugs
 ---
 
-(none?)
+- Explodes in edgecase with "Error writing file: Broken pipe (Errno)"
+  replicate with: `lister | tee /dev/null | tail -1`
 
 Planned
 -------
