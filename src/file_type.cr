@@ -69,7 +69,7 @@ module FT
     type :bash, :shell, /bash|Bourne/
     type :zsh, :shell, /zsh/
     type :script, :source
-    type :perl, :script, /perl/
+    type :perl, :script, /perl|Perl/
     type :ruby, :script, /ruby|Ruby/
     type :python, :script, /python/
 

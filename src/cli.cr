@@ -90,7 +90,7 @@ module Lister
           #for "bash", fg: :green
           #for "zsh", fg: :blue
         for "script", fg: :white
-          for "perl", fg: :yellow
+          for "perl", style: :bold, fg: :yellow
           for "ruby", fg: :red
       for "program", fg: :blue
         # x86
