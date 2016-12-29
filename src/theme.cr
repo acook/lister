@@ -41,7 +41,7 @@ module Lister
       /zsh/              => fg(:blue),
       /shell|SHELL/      => fg(:magenta),
       /perl/             => fg(:yellow),
-      /ruby/             => fg(:red),
+      /ruby|Ruby/        => fg(:red),
       /python/           => fg(:cyan),
       /x86|i386/         => fgb(:blue),
       /link|socket/      => fgb(:yellow),
