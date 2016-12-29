@@ -8,7 +8,7 @@ Killer Features
 
 ### It's magic!
 
-What sets Lister apart from standard `ls` is that it's magic! I mean, it's libMagic. It guesses the type of the file by its "magic number" or file contents instead of just by file extension.
+What sets Lister apart from standard `ls` is that it's magic! I mean it's `libMagic`. It guesses the type of the file by its "magic number" or file contents instead of just by file extension.
 
 ### It's colorful!
 
