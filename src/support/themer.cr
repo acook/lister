@@ -1,8 +1,8 @@
 require "yaml"
 
 module Themer
-  def self.create
-    td = ThemeDefiner.new
+  def self.build
+    td = Builder.new
     new_theme = with td yield td
     new_theme
   end
@@ -196,7 +196,7 @@ module Themer
     end
   end
 
-  class ThemeDefiner
+  class Builder
     property theme = Theme.new
 
     def for(id : String, bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
