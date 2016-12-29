@@ -30,7 +30,7 @@ module Lister
       if text.size > console_width
         text = text[0,(console_width-1)] + "…"
       end
-      print color(entry), text, Themer.reset, "\n"
+      print color(entry), text, options.theme.reset, "\n"
     end
 
     def color(entry)

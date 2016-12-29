@@ -1,5 +1,4 @@
 require "./support/pathname"
-require "./support/themer"
 require "./formatter"
 require "./entry"
 require "./options"
@@ -18,13 +17,6 @@ module Lister
         Formatter.new(wrap(path), options).render longest
       end
 
-    ensure
-      # make sure we don't make a mess of the terminal colors
-      print Themer.reset
-      # HACK: The following is a result of a major bug in Crystal
-      # https://github.com/crystal-lang/crystal/issues/2065
-      STDOUT.blocking = true
-      STDERR.blocking = true
     end
 
     # this does a hack job of parsing commandline arguments
