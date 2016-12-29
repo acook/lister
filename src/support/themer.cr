@@ -204,33 +204,49 @@ module Themer
       @theme[id] = colors
       @theme
     end
+
+    def default(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
+      @theme.default = Colors.new.set bg: bg, fg: fg, style: style
+    end
   end
 
   class Theme
     property store = Hash(String, Colors).new
     property reset : Colors = Colors.new.set style: :normal
+    property default : Colors | Nil
 
     def self.load(filename)
       yaml = File.open filename do |file|
         YAML.parse(file)
       end
 
+      per_def = nil
       data = Hash(String, Colors).new
       yaml.as_h.each do |k,v|
-        #colors = Colors.new.tap{|c| c.codes = v.to_s }
         colors = Colors.new.tap do |c|
           tc = c.parse v.to_s
           c.set bg: tc.bg, fg: tc.fg, style: tc.style
         end
-        data[k.to_s] = colors
+
+        if k.to_s == "DEFAULT"
+          per_def = colors
+        else
+          data[k.to_s] = colors
+        end
       end
 
-      self.new.tap{|t| t.store = data }
+      self.new.tap do |t|
+        t.default = per_def if per_def
+        t.store = data
+      end
     end
 
     def save(filename)
+      per_def = @default
+      per = store.dup
+      per["DEFAULT"] = per_def if per_def
       File.open filename, mode: "w" do |file|
-        file.puts YAML.dump(store)
+        file.puts YAML.dump per
       end
     end
 
@@ -249,6 +265,7 @@ module Themer
 end
 
 theme = Themer.create do
+  default style: :italic
   # style only
   for "reset", style: :normal
   # 16 colors
@@ -270,5 +287,6 @@ print theme["err"],      "DANGER WILL ROBINSON DANGER DANGER", theme.reset, '\n'
 print theme["lookatme"], "EXTERMINATE ANNIHILATE DESTROY",     theme.reset, '\n'
 print theme["foo"], "foo ", theme["bar"], "bar ", theme["baz"], "baz ", theme["qux"], "qux "
 print theme.reset, '\n'
-print theme["thehellofit"], "ABCDEFGHIJKLMNOP"
+print theme["thehellofit"], "ABCDEFGHIJKLMNOP", theme.reset, '\n'
+print theme.default, "waddabeat"
 print theme.reset, '\n'
