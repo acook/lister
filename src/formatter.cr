@@ -1,3 +1,5 @@
+require "./file_type"
+
 module Lister
   class Formatter
     property root : Entry
