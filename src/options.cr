@@ -10,26 +10,26 @@ module Lister
 
     DEFAULT_THEME = Themer.build do
       default style: :normal
-      for "broken", bg: :red
-      for "directory", style: :bold, fg: :black
-      for "source", fg: :white
-        for "shell", fg: :magenta
+      for "broken", bg16: :red
+      for "directory", style: :bold, fg16: :black
+      for "source", fg16: :white
+        for "shell", fg16: :magenta
           #for "bash", fg: :green
           #for "zsh", fg: :blue
-        for "script", fg: :white
-          for "perl", style: :bold, fg: :yellow
-          for "ruby", fg: :red
-      for "program", fg: :blue
+        for "script", fg16: :white
+          for "perl", style: :bold, fg16: :yellow
+          for "ruby", fg16: :red
+      for "program", fg16: :blue
         # x86
         # arm
-      for "unix", fg: :yellow
+      for "unix", fg16: :yellow
         # link
         # socket
-      for "image", style: :bold, fg: :magenta
+      for "image", style: :bold, fg16: :magenta
         # gif
         # jpeg
       for "compressed", style: :bold
-        for "doom", style: :bold, fg: :green
+        for "doom", style: :bold, fg16: :green
     end
 
     property recurse : Int8 = 1_i8

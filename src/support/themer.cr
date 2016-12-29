@@ -9,169 +9,87 @@ module Themer
 
   alias COLOR = Symbol | Int32 | String | Nil
   alias STYLE = Symbol | Nil
+  alias CTrue = String | Nil
+  alias C16   = Symbol | Nil
+  alias C256  = Int8   | Nil
 
   class Colors
-    property codes : String = ""
+    property codes : String | Nil
+    property style : STYLE
+    property fg    : CTrue
+    property bg    : CTrue
+    property fg16  : C16
+    property bg16  : C16
+    property fg256 : C256
+    property bg256 : C256
 
-    def set(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      @codes = "\e["
+    def set(
+      style : STYLE  = nil,
+      fg    : CTrue = nil, bg    : CTrue = nil,
+      fg16  : C16   = nil, bg16  : C16   = nil,
+      fg256 : C256  = nil, bg256 : C256  = nil
+    )
 
-      if style
-        @codes += "#{s style};"
-      end
-
-      case bg
-      when Symbol # 16 colors by name
-        @codes += "4#{c bg};"
-      when Int # 256 colors by number
-        @codes += "48;5;#{bg};"
-      when String # true color by hex string
-        @codes += "48;2;#{hex bg};"
-      end
-
-      case fg
-      when Symbol # 16 colors by name
-        @codes += "3#{c fg};"
-      when Int # 256 colors by number
-        @codes += "38;5;#{fg};"
-      when String # true color by hex string
-        @codes += "38;2;#{hex fg};"
-      end
-
-      @codes += "m"
+      @style = style if style
+      @fg    = fg    if fg
+      @bg    = bg    if bg
+      @fg16  = fg16  if fg16
+      @bg16  = bg16  if bg16
+      @fg256 = fg256 if fg256
+      @bg256 = bg256 if bg256
 
       self # return self for chaining
     end
 
-    def parse(code : String) : ThemeColors | NoReturn
-      raise ArgumentError.new(
-        "doesn't begin with escape sequence, got #{code[0].inspect} instead"
-      ) unless code[0] == '\e'
-      raise ArgumentError.new(
-        "doesn't begin with esc and bracket, got #{code[1].inspect} instead"
-      ) unless code[1] == '['
-
-      colors = ThemeColors.new
-      pack = ""
-      fg_rgb_flag = false
-      bg_rgb_flag = false
-      fg_256_flag = false
-      bg_256_flag = false
-      fg = false
-      bg = false
-      fg_rgb = Array(Int32).new
-      bg_rgb = Array(Int32).new
-      last = 0
-
-      code.each_char_with_index do |chr, i|
-        last = i
-        next if i < 2
-
-        if chr.ascii_number?
-          pack += chr
-        elsif chr == ';'
-          num = pack.to_i
-
-          if false # I wonder if this gets optimized out...
-
-          # switches for 256 and true color
-          elsif num == 38 # fg extended
-            fg = true
-          elsif num == 48 # bg extended
-            bg = true
-          elsif num == 5 && fg # fg 256 color
-            fg_256_flag = true
-            fg = false
-          elsif num == 5 && bg # bg 256 color
-            bg_256_flag = true
-            bg = false
-          elsif num == 2 && fg # fg true color
-            fg_rgb_flag = true
-            fg = false
-          elsif num == 2 && bg # bg true color
-            bg_rgb_flag = true
-            bg = false
-
-          # 256 and true color codes
-          elsif fg_256_flag # store fg 256 color
-            colors.fg = num
-            fg_256_flag = false
-          elsif bg_256_flag # store bg 256 color
-            colors.bg = num
-            bg_256_flag = false
-          elsif fg_rgb_flag # store fg true color
-            fg_rgb << num
-          elsif bg_rgb_flag # store bg true color
-            bg_rgb << num
-
-          # 16 color codes
-          elsif num < 38 && num > 29 # it's a fg color
-            colors.fg = COLORS[num - 30]
-          elsif num < 48 && num > 39 # it's a bg color
-            colors.bg = COLORS[num - 40]
-
-          # styles, we have to do these last!
-          # there are technically other styles,
-          # but we only care about the first 10
-          elsif num <= 10 # it's a style! hopefully
-            colors.style = STYLES[num]
-
-          # if all else fails... PANIC!
-          else
-            raise "what is this i dont even PACK=#{pack.inspect}"
-          end
-
-          pack = "" # reset the string for the next go-round
-        elsif chr == 'm'
-          break # end of sequence, probably
-        else
-          raise ArgumentError.new(
-            "unrecognized character, expected digit, semicolon, or 'm' but got #{chr.inspect} instead"
-          )
-        end
-
-        if fg_rgb.size > 3
-          raise "too many fg args"
-        elsif bg_rgb.size > 3
-          raise "too many bg args"
-        end
-      end
-
-      if fg_rgb_flag
-        fg = "#"
-        fg_rgb.each do |n|
-          fg += n.to_s(16).rjust(2,'0')
-        end
-        colors.fg = fg
-      end
-
-      if bg_rgb_flag
-        bg = "#"
-        bg_rgb.each do |n|
-          bg += n.to_s(16).rjust(2,'0')
-        end
-        colors.bg = bg
-      end
-
-      raise(
-        "more data at the end of the escape sequence " \
-        "LAST=#{last} TOTAL=#{code.size} " \
-        "DATA=#{code[last, code.size - 1].inspect}"
-      ) if (last + 1) < code.size # maybe it wasn't the end of the sequence??
-
-      colors
+    def codes
+      @codes || regen_codes
     end
 
-    def to_s(io)
-      io.print @codes
-    end
+    def regen_codes(color_depth = 16_000_000)
+      new_codes = "\e["
 
-    def c(name : Symbol)
-      COLORS.index name || raise "color not found: #{name.inspect}"
+      if tmp_s = style
+        new_codes += "#{s tmp_s};"
+      end
+
+      if color_depth > 256 && (tmp_fg = fg)
+        new_codes += "38;2;#{ct tmp_fg};"
+      elsif color_depth > 16 && (tmp_fg256 = fg256)
+        new_codes += "38;5;#{tmp_fg256};"
+      elsif color_depth > 0 && (tmp_fg16 = fg16)
+        new_codes += "3#{c16 tmp_fg16};"
+      end
+
+      if (tmp_bg = bg) && color_depth > 256
+        new_codes += "48;2;#{ct tmp_bg};"
+      elsif (tmp_bg256 = bg256) && color_depth > 16
+        new_codes += "48;5;#{tmp_bg256};"
+      elsif (tmp_bg16 = bg16) && color_depth > 0
+        new_codes += "4#{c16 tmp_bg16};"
+      end
+
+      new_codes += "m"
+      @codes = new_codes
     end
 
     def s(name : Symbol)
       STYLES.index name || raise "style not found: #{name.inspect}"
+    end
+
+    def c16(name : Symbol)
+      COLORS.index name || raise "color not found: #{name.inspect}"
+    end
+
+    def ct(indicator : String)
+      if indicator[0] == '#'
+        hex indicator
+      else
+        hex lookup_rgb indicator
+      end
+    end
+
+    def lookup_rgb(color_name)
+      "#FFFFFF"
     end
 
     def hex(hexcode : String)
@@ -182,31 +100,45 @@ module Themer
       "#{r};#{g};#{b}"
     end
 
+    def to_s(io)
+      io.print codes
+    end
+
     def to_yaml(*args)
       codes.to_yaml *args
     end
 
     COLORS = %i[black red green yellow blue magenta cyan white extended default]
     STYLES = %i[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
-
-    class ThemeColors
-      property bg : COLOR
-      property fg : COLOR
-      property style : STYLE
-    end
   end
 
   class Builder
     property theme = Theme.new
 
-    def for(id : String, bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      colors = Colors.new.set bg: bg, fg: fg, style: style
+    def for( id : String,
+      style : STYLE = nil,
+      fg    : CTrue = nil, bg    : CTrue = nil,
+      fg16  : C16   = nil, bg16  : C16   = nil,
+      fg256 : C256  = nil, bg256 : C256  = nil
+    )
+      colors = Colors.new.set style: style,
+        fg:    fg,    bg:    bg,
+        fg16:  fg16,  bg16:  bg16,
+        fg256: fg256, bg256: bg256
       @theme[id] = colors
       @theme
     end
 
-    def default(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      @theme.default = Colors.new.set bg: bg, fg: fg, style: style
+    def default(
+      style : STYLE = nil,
+      fg    : CTrue = nil, bg    : CTrue = nil,
+      fg16  : C16   = nil, bg16  : C16   = nil,
+      fg256 : C256  = nil, bg256 : C256  = nil
+    )
+      @theme.default = Colors.new.set style: style,
+        fg:    fg,    bg:    bg,
+        fg16:  fg16,  bg16:  bg16,
+        fg256: fg256, bg256: bg256
     end
   end
 
