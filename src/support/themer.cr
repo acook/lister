@@ -290,8 +290,8 @@ module Themer
       store[id]
     end
 
-    def []=(id : String, seq : Colors)
-      store[id] = seq || raise ArgumentError.new("key cannot be nil")
+    def []=(id : String, colors : Colors)
+      store[id] = colors || raise ArgumentError.new("key cannot be nil")
     end
   end
 
