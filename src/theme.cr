@@ -1,4 +1,5 @@
 require "./support/themer"
+require "./file_type"
 
 module Lister
   class Theme
@@ -26,47 +27,20 @@ module Lister
         for "doom", style: :bold, fg: :green
     end
 
-    enum Types
-      Default
-      Directory
-      Broken
-
-      Source
-        Shell
-          Bash
-          Zsh
-        Script
-          Ruby
-          Perl
-          Python
-      Program
-        X86
-        ARM
-      Unix
-        Link
-        Socket
-      Image
-        GIF
-        JPEG
-      Compressed
-        Zip
-        Wad
-    end
-
-    DEFAULT_TYPES = Hash(Regex, Array(Types)).new.merge({
-      /broken|NOT FOUND|cannot open/ => [Types::Broken],
-      /bash|Bourne/      => [Types::Bash, Types::Shell, Types::Source],
-      /zsh/              => [Types::Zsh, Types::Shell, Types::Source],
-      /shell|SHELL/      => [Types::Shell, Types::Source],
-      /perl/             => [Types::Perl, Types::Script, Types::Source],
-      /ruby|Ruby/        => [Types::Ruby, Types::Script, Types::Source],
-      /python/           => [Types::Python, Types::Script, Types::Source],
-      /x86|i386/         => [Types::X86, Types::Program],
-      /link|socket/      => [Types::Link, Types::Socket, Types::Unix],
-      /directory/        => [Types::Directory],
-      /program/          => [Types::Program],
-      /GIF/              => [Types::GIF, Types::Image],
-      /doom|PWAD/        => [Types::Wad, Types::Compressed],
+    DEFAULT_TYPES = Hash(Regex, FT::Node).new.merge({
+      /broken|NOT FOUND|cannot open/ => FT[:broken],
+      /directory/        => FT[:directory],
+      /link|socket/      => FT[:unix],
+      /bash|Bourne/      => FT[:bash],
+      /zsh/              => FT[:zsh],
+      /shell|SHELL/      => FT[:shell],
+      /perl/             => FT[:perl],
+      /ruby|Ruby/        => FT[:ruby],
+      /python/           => FT[:python],
+      /x86|i386/         => FT[:x86],
+      /program/          => FT[:program],
+      /GIF/              => FT[:gif],
+      /doom|PWAD/        => FT[:wad]
     })
 
     property entry : Entry
@@ -80,14 +54,13 @@ module Lister
     end
 
     def styles
-      s = types.find do |regex, styles|
-        regex =~ @entry.type
+      types.find do |regex, t|
+        if regex =~ @entry.type
+          return t.list
+        end
       end
-      if s
-        s.last
-      else
-        Array(Types).new
-      end
+
+      Array(String).new
     end
 
     def types
