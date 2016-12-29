@@ -37,7 +37,7 @@ module Lister
       types = FT.match do |r|
         r =~ entry.type
       end
-      options.theme.get_any types
+      options.theme.for types
     end
 
     def indentation(size)

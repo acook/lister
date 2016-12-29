@@ -250,7 +250,7 @@ module Themer
       end
     end
 
-    def get(id : String) : Colors | NoReturn
+    def for(id : String) : Colors | NoReturn
       default = @default  # so the ivar doesn't change during execution
       if default.nil?
         store[id] || raise ArgumentError.new("id not found #{id.inspect}")
@@ -270,7 +270,7 @@ module Themer
       end
     end
 
-    def get_any(ids : Array(String)) : Colors | Nil
+    def for(ids : Array(String)) : Colors | Nil
       default = @default
       found = nil
       ids.find do |id|
