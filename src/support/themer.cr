@@ -143,7 +143,7 @@ module Themer
     def for( id : String,
       style : Symbol = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : Symbol   = nil, bg16  : Symbol   = nil,
+      fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
       colors = Colors.new.set style: (style && style.to_s).as(String | Nil),
@@ -169,7 +169,7 @@ module Themer
     def default(
       style : Symbol = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : Symbol   = nil, bg16  : Symbol   = nil,
+      fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
       @theme.default = Colors.new.set style: (style && style.to_s).as(String | Nil),

@@ -8,7 +8,7 @@ describe Themer do
       # style only
       for "reset", style: :normal
       # 16 colors
-      for "err", bg16: :red, style: :bold, fg16: :white
+      for "err", bg16: "red", style: :bold, fg16: "white"
       # 256 color
       for "thehellofit", bg256: 33.to_i8
       # true color
