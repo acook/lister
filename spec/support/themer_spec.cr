@@ -3,7 +3,7 @@ require "../src/support/themer"
 
 describe Themer do
   it "does all the things" do
-    theme = Themer.create do
+    theme = Themer.build do
       default style: :italic
       # style only
       for "reset", style: :normal
