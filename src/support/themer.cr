@@ -45,30 +45,35 @@ module Themer
     end
 
     def regen_codes(color_depth = 16_000_000)
-      new_codes = "\e["
+      new_codes = ""
 
       if tmp_s = style
-        new_codes += "#{s tmp_s};"
+        new_codes += "#{s tmp_s}"
       end
 
       if color_depth > 256 && (tmp_fg = fg)
-        new_codes += "38;2;#{ct tmp_fg};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "38;2;#{ct tmp_fg}"
       elsif color_depth > 16 && (tmp_fg256 = fg256)
-        new_codes += "38;5;#{tmp_fg256};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "38;5;#{tmp_fg256}"
       elsif color_depth > 0 && (tmp_fg16 = fg16)
-        new_codes += "3#{c16 tmp_fg16};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "3#{c16 tmp_fg16}"
       end
 
       if (tmp_bg = bg) && color_depth > 256
-        new_codes += "48;2;#{ct tmp_bg};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "48;2;#{ct tmp_bg}"
       elsif (tmp_bg256 = bg256) && color_depth > 16
-        new_codes += "48;5;#{tmp_bg256};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "48;5;#{tmp_bg256}"
       elsif (tmp_bg16 = bg16) && color_depth > 0
-        new_codes += "4#{c16 tmp_bg16};"
+        new_codes += ";" unless new_codes.empty?
+        new_codes += "4#{c16 tmp_bg16}"
       end
 
-      new_codes += "m"
-      @codes = new_codes
+      @codes = "\e[" + new_codes + "m"
     end
 
     def s(name : STYLE)
