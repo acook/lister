@@ -23,17 +23,29 @@ Installation
 
 As soon as a few more things are squared away I'll upload binary releases for macOS and Linux, but for now you can compile it yourself.
 
-First you'll need a copy of the code so `git clone https://acook/lister` and `cd lister`.
+Building
+========
 
-If you're using [Homebrew](https://brew.sh) or [Linuxbrew](https://linuxbrew.sh) all you need to do is `brew install crystal` and then run `./scripts/build` and then put the resulting binary (`./bin/lister`) somewhere in your `$PATH`. You can even make an alias for it if you want a shorter name (I recomend `alias l=lister`).
+If you're using [Homebrew](https://brew.sh) or [Linuxbrew](https://linuxbrew.sh):
+- `brew install crystal`
 
-If you're not using \*brew then follow the instructions on the [Crystal homepage](https://crystal-lang.org) to install it and then `./scripts/build`!
+If you're not using \*brew then you can obtain [Crystal from its homepage](https://crystal-lang.org).
+
+You'll need a copy of the code:
+- `git clone https://github.com/acook/lister`
+
+Run the build script:
+- `./lister/scripts/build`
+
+Put the resulting binary somewhere in your path:
+- `mv lister/bin/lister ~/xbin`
+
+You can even make an alias for it in your shell rc file:
+- `alias l=lister`
 
 Created By
 =========
 
-> Copyright 2016 - Anthony M. Cook
-
-
+> Copyright 2016-2018 - Anthony M. Cook
 
 <a name="wip">*</a><em>Some things are a work in progress! (yes this applies to me as well)</em>

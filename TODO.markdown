@@ -4,7 +4,7 @@ Lister TODO
 Bugs
 ---
 
-- Explodes in edgecase with "Error writing file: Broken pipe (Errno)"
+- (FIXED) Explodes in edgecase with "Error writing file: Broken pipe (Errno)"
   replicate with: `lister | tee /dev/null | tail -1`
 
 Planned
@@ -12,7 +12,7 @@ Planned
 
 ### Themer
 
-- Allow themes to have fallback colors for different color depths
+- (DONE) Allow themes to have fallback colors for different color depths
 - Specify theme on commandline
 - Specify theme in config file
 - Sepcify color depth on commandline
@@ -20,15 +20,6 @@ Planned
 - Attempt to autodetect color depth if not specified
 - true color palette names
 - Integrate XKCD's rgb.txt
-
-*updated Themer DSL with fallback colors*
-```ruby
-theme = Theme.create "name" do
-  for "invalid", bg: "#da467d", bg16: :red
-  for "bash",    fg: "#00FF00"
-  for "python",  fg256: 122
-end
-```
 
 ### Visual
 
