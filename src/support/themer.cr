@@ -105,7 +105,7 @@ module Themer
     end
 
     def to_s(io)
-      io.print codes
+      io << codes
     end
 
     def to_hash
