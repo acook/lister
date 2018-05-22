@@ -26,7 +26,7 @@ if is_cmd brew; then
 else
   echo "enter password to install with apt or ctrl-c to do it yourself..."
   curl https://dist.crystal-lang.org/apt/setup.sh | sudo bash
-  sudo apt-get install libmagic crystal
+  sudo apt-get install libmagic crystal libyaml-dev libxml2-dev libmagic-dev
 fi
 
 echo "testing..."
