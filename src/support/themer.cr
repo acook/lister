@@ -10,7 +10,7 @@ module Themer
   alias STYLE = String | Nil
   alias CTrue = String | Nil
   alias C16   = String | Nil
-  alias C256  = Int8   | Nil
+  alias C256  = String | Nil
 
   class Colors
     property codes : String | Nil
@@ -196,10 +196,10 @@ module Themer
       data = Hash(String, Colors).new
       yaml.each do |k,v|
         colors = Colors.new.tap do |c|
-          c.set style: v["style"].as(STYLE),
+          c.set style: v["style"].to_s,
             fg:    v["fg"].to_s,    bg:    v["bg"].to_s,
             fg16:  v["fg16"].to_s,  bg16:  v["bg16"].to_s,
-            fg256: v["fg256"].as(Int8), bg256: v["bg256"].as(Int8)
+            fg256: v["fg256"].to_s, bg256: v["bg256"].to_s
         end
 
         if k.to_s == "DEFAULT"

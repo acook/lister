@@ -10,7 +10,7 @@ describe Themer do
       # 16 colors
       for "err", bg16: "red", style: :bold, fg16: "white"
       # 256 color
-      for "thehellofit", bg256: 33.to_i8
+      for "thehellofit", bg256: "33"
       # true color
       for "lookatme", fg: "#de1e7e", style: :bold
       for "foo", fg: "#BADA55"
