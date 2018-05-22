@@ -132,21 +132,7 @@ module Themer
     property theme = Theme.new
 
     def for( id : String,
-      style : STYLE = nil,
-      fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : C16   = nil, bg16  : C16   = nil,
-      fg256 : C256  = nil, bg256 : C256  = nil
-    )
-      colors = Colors.new.set style: style,
-        fg:    fg,    bg:    bg,
-        fg16:  fg16,  bg16:  bg16,
-        fg256: fg256, bg256: bg256
-      @theme[id] = colors
-      @theme
-    end
-
-    def for( id : String,
-      style : Symbol = nil,
+      style : STYLE | Symbol = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
