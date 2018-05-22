@@ -1,5 +1,5 @@
 require "spec"
-require "../src/support/themer"
+require "../../src/support/themer"
 
 describe Themer do
   it "does all the things" do
