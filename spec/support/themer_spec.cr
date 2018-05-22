@@ -22,16 +22,16 @@ describe Themer do
     # @default is allowed to be nil
     default = theme.default
     if default
-      default.codes.should eq "\e[3;m"
+      default.codes.should eq "\e[3m"
     else
       fail "theme.default was nil"
     end
 
     theme.reset.codes.should eq theme["reset"].codes
 
-    theme["err"].codes.should eq "\e[1;37;41;m"
-    theme["thehellofit"].codes.should eq "\e[48;5;33;m"
-    theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126;m"
+    theme["err"].codes.should eq "\e[1;37;41m"
+    theme["thehellofit"].codes.should eq "\e[48;5;33m"
+    theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"
 
     # test saving and loading
     theme_file = "./tmp/my_testing_theme.theme"
