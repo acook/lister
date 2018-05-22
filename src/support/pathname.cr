@@ -34,9 +34,11 @@ class Pathname
     skip = %w[. ..]
 
     children = Array(Pathname).new
-    Dir.foreach(path) do |entry|
-      next if skip.includes? entry
-      children << self.class.new self.join entry
+    Dir.open(path) do |dir|
+      dir.each do |entry|
+        next if skip.includes? entry
+        children << self.class.new self.join entry
+      end
     end
     children
   end
