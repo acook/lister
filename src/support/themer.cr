@@ -7,30 +7,27 @@ module Themer
     new_theme
   end
 
-  alias STYLE = String | Nil
-  alias CTrue = String | Nil
-  alias C16   = String | Nil
-  alias C256  = String | Nil
+  alias StrNil = String | Nil
 
   class Color
-    property codes : String | Nil
+    property codes : StrNil
 
-    property style : STYLE
-    property fg    : CTrue
-    property bg    : CTrue
+    property style : StrNil
+    property fg    : StrNil
+    property bg    : StrNil
 
-    property style16 : STYLE
-    property fg16    : C16
-    property bg16    : C16
+    property style16 : StrNil
+    property fg16    : StrNil
+    property bg16    : StrNil
 
-    property style256 : STYLE
-    property fg256    : C256
-    property bg256    : C256
+    property style256 : StrNil
+    property fg256    : StrNil
+    property bg256    : StrNil
 
     def set(
-      style    : STYLE = nil, fg    : CTrue = nil, bg    : CTrue = nil,
-      style16  : STYLE = nil, fg16  : C16   = nil, bg16  : C16   = nil,
-      style256 : STYLE = nil, fg256 : C256  = nil, bg256 : C256  = nil
+      style    : StrNil = nil, fg    : StrNil = nil, bg    : StrNil = nil,
+      style16  : StrNil = nil, fg16  : StrNil = nil, bg16  : StrNil = nil,
+      style256 : StrNil = nil, fg256 : StrNil = nil, bg256 : StrNil = nil
     )
 
       @style = style if style && !style.empty?
@@ -84,15 +81,15 @@ module Themer
       "\e[" + (new_codes_string.empty? ? "0" : new_codes_string) + "m"
     end
 
-    def s(name : STYLE)
+    def s(name : StrNil)
       STYLES.index name || raise "style not found: #{name.inspect}"
     end
 
-    def c16(name : C16)
-      COLORS.index name || 0
+    def c16(name : StrNil)
+      COLORS.index name || raise "color16 not found: #{name.inspect}"
     end
 
-    def ct(indicator : CTrue)
+    def ct(indicator : StrNil)
       indicator ? hex indicator : raise "hex color indicator not valid: #{indicator}"
     end
 
@@ -110,16 +107,10 @@ module Themer
 
     def to_hash
       {
-        style: style,
-        fg: fg,
-        bg: bg,
-        style256: style256,
-        fg256: fg256,
-        bg256: bg256,
-        style16: style16,
-        fg16: fg16,
-        bg16: bg16
-    }.to_h.delete_if {|_,v| !v || v.empty? }
+        style:    style,    fg:    fg,    bg: bg,
+        style256: style256, fg256: fg256, bg256: bg256,
+        style16:  style16,  fg16:  fg16,  bg16: bg16
+      }.to_h.delete_if { |_,v| !v || v.empty? }
     end
 
     def to_yaml(*args)
@@ -150,7 +141,7 @@ module Themer
     property default : Color | Nil
 
     def self.load(filename)
-      yaml = Hash(String, Hash(String, CTrue | C256 | C16)).new
+      yaml = Hash(String, Hash(String, StrNil | StrNil | StrNil)).new
 
       File.open filename do |file|
         yaml = YAML.parse(file)
