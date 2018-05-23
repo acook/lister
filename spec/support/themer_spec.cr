@@ -29,9 +29,10 @@ describe Themer do
 
     theme.reset.codes.should eq theme["reset"].codes
 
-    theme["err"].codes.should eq "\e[1;37;41m"
+    theme.for("err").codes.should eq "\e[1;37;41m"
     theme["thehellofit"].codes.should eq "\e[48;5;33m"
     theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"
+    theme.for(%w{bar qux}).codes.should eq "\e[38;2;225;225;0m"
 
     # test saving and loading
     theme_file = "./tmp/my_testing_theme.theme"

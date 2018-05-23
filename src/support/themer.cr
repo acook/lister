@@ -196,47 +196,24 @@ module Themer
     end
 
     def for(id : String) : Color
-      default = @default  # so the ivar doesn't change during execution
-      if default.nil?
-        colormap[id] || raise ArgumentError.new("id not found #{id.inspect}")
-      else
-        colormap.fetch id, default
-      end
-
-      default = @default
-      color = colormap.fetch id, false
-
-      if found
-        found
-      elsif default
-        default
-      else
-        raise ArgumentError.new "#{self.class}#for(String) color id not found #{id.inspect}"
-      end
+      colormap[id]? || raise ArgumentError.new "#{self.class}#for(String) color id not found #{id.inspect}"
     end
 
     def for(ids : Array(String)) : Color
-      default = @default
       found = nil
       ids.find do |id|
         found = colormap.fetch id, nil
       end
 
-      if found
-        found
-      elsif default
-        default
-      else
-        raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")
-      end
+      found || @default || raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")
     end
 
     def [](id : String) : Color
       colormap[id]
     end
 
-    def []=(id : String, colors : Color)
-      colormap[id] = colors || raise ArgumentError.new("key cannot be nil")
+    def []=(id : String, color : Color)
+      colormap[id] = color || raise ArgumentError.new("key cannot be nil")
     end
   end
 
