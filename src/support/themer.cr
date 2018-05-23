@@ -14,28 +14,36 @@ module Themer
 
   class Color
     property codes : String | Nil
+
     property style : STYLE
     property fg    : CTrue
     property bg    : CTrue
-    property fg16  : C16
-    property bg16  : C16
-    property fg256 : C256
-    property bg256 : C256
+
+    property style16 : STYLE
+    property fg16    : C16
+    property bg16    : C16
+
+    property style256 : STYLE
+    property fg256    : C256
+    property bg256    : C256
 
     def set(
-      style : STYLE = nil,
-      fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : C16   = nil, bg16  : C16   = nil,
-      fg256 : C256  = nil, bg256 : C256  = nil
+      style    : STYLE = nil, fg    : CTrue = nil, bg    : CTrue = nil,
+      style16  : STYLE = nil, fg16  : C16   = nil, bg16  : C16   = nil,
+      style256 : STYLE = nil, fg256 : C256  = nil, bg256 : C256  = nil
     )
 
       @style = style if style && !style.empty?
       @fg    = fg    if fg    && !fg.empty?
       @bg    = bg    if bg    && !bg.empty?
-      @fg16  = fg16  if fg16  && !fg16.empty?
-      @bg16  = bg16  if bg16  && !bg16.empty?
-      @fg256 = fg256 if fg256 && !fg256.empty?
-      @bg256 = bg256 if bg256 && !bg256.empty?
+
+      @style16 = style16 if style16 && !style16.empty?
+      @fg16    = fg16    if fg16    && !fg16.empty?
+      @bg16    = bg16    if bg16    && !bg16.empty?
+
+      @style256 = style256 if style256 && !style256.empty?
+      @fg256    = fg256    if fg256    && !fg256.empty?
+      @bg256    = bg256    if bg256    && !bg256.empty?
 
       self # return self for chaining
     end
@@ -47,27 +55,33 @@ module Themer
     def codes_for(color_depth : Int32)
       new_codes = Array(String).new
 
-      if style
-        new_codes << "#{s style}"
+      if style && color_depth > 256
+        new_codes << "#{s style}" unless style == "none"
+      elsif style256 && color_depth > 16
+        new_codes << "#{s style256}" unless style256 == "none"
+      elsif style16 && color_depth > 0
+        new_codes << "#{s style16}" unless style16 == "none"
       end
 
       if fg && color_depth > 256
-        new_codes << "38;2;#{ct fg}"
+        new_codes << "38;2;#{ct fg}" unless fg == "none"
       elsif fg256 && color_depth > 16
-        new_codes << "38;5;#{fg256}"
+        new_codes << "38;5;#{fg256}" unless fg256 == "none"
       elsif fg16 && color_depth > 0
-        new_codes << "3#{c16 fg16}"
+        new_codes << "3#{c16 fg16}" unless fg16 == "none"
       end
 
       if bg && color_depth > 256
-        new_codes << "48;2;#{ct bg}"
+        new_codes << "48;2;#{ct bg}" unless bg == "none"
       elsif bg256 && color_depth > 16
-        new_codes << "48;5;#{bg256}"
+        new_codes << "48;5;#{bg256}" unless bg256 == "none"
       elsif bg16 && color_depth > 0
-        new_codes << "4#{c16 bg16}"
+        new_codes << "4#{c16 bg16}" unless bg16 == "none"
       end
 
-      "\e[" + new_codes.join(";") + "m"
+      new_codes_string = new_codes.join(";")
+
+      "\e[" + (new_codes_string.empty? ? "0" : new_codes_string) + "m"
     end
 
     def s(name : STYLE)
@@ -99,8 +113,10 @@ module Themer
         style: style,
         fg: fg,
         bg: bg,
+        style256: style256,
         fg256: fg256,
         bg256: bg256,
+        style16: style16,
         fg16: fg16,
         bg16: bg16
     }.to_h.delete_if {|_,v| !v || v.empty? }
@@ -117,30 +133,14 @@ module Themer
   class Builder
     property theme = Theme.new
 
-    def for( id : String,
-      style : STYLE = nil,
-      fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : C16   = nil, bg16  : C16   = nil,
-      fg256 : C256  = nil, bg256 : C256  = nil
-    )
-      color = Color.new.set style: style,
-        fg:    fg,    bg:    bg,
-        fg16:  fg16,  bg16:  bg16,
-        fg256: fg256, bg256: bg256
+    def for(id : String, **args)
+      color = Color.new.set **args
       @theme[id] = color
       @theme
     end
 
-    def default(
-      style : STYLE | Symbol = nil,
-      fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : C16   = nil, bg16  : C16   = nil,
-      fg256 : C256  = nil, bg256 : C256  = nil
-    )
-      @theme.default = Color.new.set style: style,
-        fg:    fg,    bg:    bg,
-        fg16:  fg16,  bg16:  bg16,
-        fg256: fg256, bg256: bg256
+    def default(**args)
+      @theme.default = Color.new.set(**args)
     end
   end
 
@@ -153,18 +153,17 @@ module Themer
       yaml = Hash(String, Hash(String, CTrue | C256 | C16)).new
 
       File.open filename do |file|
-        yaml = YAML.parse(file)#.as Hash
-        #(String, Hash(String, String | Int8 | Nil))
+        yaml = YAML.parse(file)
       end
 
       per_def = nil
       data = Hash(String, Color).new
       yaml.each do |k,v|
         colors = Color.new.tap do |c|
-          c.set style: v["style"]?.to_s,
-            fg:    v["fg"]?.to_s,    bg:    v["bg"]?.to_s,
-            fg16:  v["fg16"]?.to_s,  bg16:  v["bg16"]?.to_s,
-            fg256: v["fg256"]?.to_s, bg256: v["bg256"]?.to_s
+          c.set \
+            style:    v["style"]?.to_s,    fg:    v["fg"]?.to_s,    bg:    v["bg"]?.to_s,
+            style16:  v["style16"]?.to_s,  fg16:  v["fg16"]?.to_s,  bg16:  v["bg16"]?.to_s,
+            style256: v["style256"]?.to_s, fg256: v["fg256"]?.to_s, bg256: v["bg256"]?.to_s
         end
 
         if k.to_s == "DEFAULT"
