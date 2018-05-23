@@ -146,19 +146,7 @@ module Themer
     end
 
     def default(
-      style : STYLE = nil,
-      fg    : CTrue = nil, bg    : CTrue = nil,
-      fg16  : C16   = nil, bg16  : C16   = nil,
-      fg256 : C256  = nil, bg256 : C256  = nil
-    )
-      @theme.default = Colors.new.set style: style,
-        fg:    fg,    bg:    bg,
-        fg16:  fg16,  bg16:  bg16,
-        fg256: fg256, bg256: bg256
-    end
-
-    def default(
-      style : Symbol = nil,
+      style : STYLE | Symbol = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
