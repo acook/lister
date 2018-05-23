@@ -124,16 +124,16 @@ module Themer
     property theme = Theme.new
 
     def for( id : String,
-      style : STYLE | Symbol = nil,
+      style : STYLE = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
-      colors = Color.new.set style: (style && style.to_s).as(String | Nil),
+      color = Color.new.set style: style,
         fg:    fg,    bg:    bg,
-        fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
+        fg16:  fg16,  bg16:  bg16,
         fg256: fg256, bg256: bg256
-      @theme[id] = colors
+      @theme[id] = color
       @theme
     end
 
@@ -143,9 +143,9 @@ module Themer
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
-      @theme.default = Color.new.set style: (style && style.to_s).as(String | Nil),
+      @theme.default = Color.new.set style: style,
         fg:    fg,    bg:    bg,
-        fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
+        fg16:  fg16,  bg16:  bg16,
         fg256: fg256, bg256: bg256
     end
   end
