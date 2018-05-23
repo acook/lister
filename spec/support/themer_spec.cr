@@ -39,6 +39,6 @@ describe Themer do
     theme.save theme_file
     loaded_theme = Themer::Theme.load theme_file
 
-    loaded_theme.store.map{|_,v| v.codes}.should eq theme.store.map{|_,v| v.codes}
+    loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
   end
 end

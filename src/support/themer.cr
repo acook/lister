@@ -12,7 +12,7 @@ module Themer
   alias C16   = String | Nil
   alias C256  = String | Nil
 
-  class Colors
+  class Color
     property codes : String | Nil
     property style : STYLE
     property fg    : CTrue
@@ -129,7 +129,7 @@ module Themer
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
-      colors = Colors.new.set style: (style && style.to_s).as(String | Nil),
+      colors = Color.new.set style: (style && style.to_s).as(String | Nil),
         fg:    fg,    bg:    bg,
         fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
         fg256: fg256, bg256: bg256
@@ -143,7 +143,7 @@ module Themer
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
     )
-      @theme.default = Colors.new.set style: (style && style.to_s).as(String | Nil),
+      @theme.default = Color.new.set style: (style && style.to_s).as(String | Nil),
         fg:    fg,    bg:    bg,
         fg16:  (fg16 && fg16.to_s).as(String | Nil),  bg16:  (bg16 && bg16.to_s).as(String | Nil),
         fg256: fg256, bg256: bg256
@@ -151,9 +151,9 @@ module Themer
   end
 
   class Theme
-    property store = Hash(String, Colors).new
-    property reset : Colors = Colors.new.set style: "normal"
-    property default : Colors | Nil
+    property colormap = Hash(String, Color).new
+    property reset : Color = Color.new.set style: "normal"
+    property default : Color | Nil
 
     def self.load(filename)
       yaml = Hash(String, Hash(String, CTrue | C256 | C16)).new
@@ -164,9 +164,9 @@ module Themer
       end
 
       per_def = nil
-      data = Hash(String, Colors).new
+      data = Hash(String, Color).new
       yaml.each do |k,v|
-        colors = Colors.new.tap do |c|
+        colors = Color.new.tap do |c|
           c.set style: v["style"]?.to_s,
             fg:    v["fg"]?.to_s,    bg:    v["bg"]?.to_s,
             fg16:  v["fg16"]?.to_s,  bg16:  v["bg16"]?.to_s,
@@ -182,29 +182,29 @@ module Themer
 
       self.new.tap do |t|
         t.default = per_def if per_def
-        t.store = data
+        t.colormap = data
       end
     end
 
     def save(filename)
       per_def = @default
-      per = store.dup
+      per = colormap.dup
       per["DEFAULT"] = per_def if per_def
       File.open filename, mode: "w" do |file|
         file.puts YAML.dump per
       end
     end
 
-    def for(id : String) : Colors
+    def for(id : String) : Color
       default = @default  # so the ivar doesn't change during execution
       if default.nil?
-        store[id] || raise ArgumentError.new("id not found #{id.inspect}")
+        colormap[id] || raise ArgumentError.new("id not found #{id.inspect}")
       else
-        store.fetch id, default
+        colormap.fetch id, default
       end
 
       default = @default
-      color = store.fetch id, false
+      color = colormap.fetch id, false
 
       if found
         found
@@ -215,11 +215,11 @@ module Themer
       end
     end
 
-    def for(ids : Array(String)) : Colors
+    def for(ids : Array(String)) : Color
       default = @default
       found = nil
       ids.find do |id|
-        found = store.fetch id, nil
+        found = colormap.fetch id, nil
       end
 
       if found
@@ -231,16 +231,16 @@ module Themer
       end
     end
 
-    def [](id : String) : Colors
-      store[id]
+    def [](id : String) : Color
+      colormap[id]
     end
 
-    def []=(id : String, colors : Colors)
-      store[id] = colors || raise ArgumentError.new("key cannot be nil")
+    def []=(id : String, colors : Color)
+      colormap[id] = colors || raise ArgumentError.new("key cannot be nil")
     end
   end
 
   def self.reset
-    Colors.new.set style: "normal"
+    Color.new.set style: "normal"
   end
 end
