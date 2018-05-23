@@ -46,9 +46,7 @@ module Lister
         elsif %w[-h --help].includes? arg
           usage
         elsif arg == "--list-types"
-          puts FT::DEFAULT_TYPES.keys.sort.map{|type|
-            options.theme.for(FT.match(type.to_s).flatten).to_s + type.to_s + options.theme.reset.to_s
-          }.join(", ")
+          puts Formatter.list_types(options)
           exit 0
         elsif arg == "-K"
           @options.show_type_names = true

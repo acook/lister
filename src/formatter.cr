@@ -2,6 +2,12 @@ require "./file_type"
 
 module Lister
   class Formatter
+    def self.list_types(options)
+      FT::DEFAULT_TYPES.keys.sort.map do |type|
+        options.theme.for(FT.match(type.to_s).flatten).to_s + type.to_s + options.theme.reset.to_s
+      end.join(", ")
+    end
+
     property root : Entry
     property options : Options
 
