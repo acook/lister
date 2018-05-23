@@ -56,7 +56,7 @@ module Lister
         r =~ entry.type
       end
 
-      options.theme.for types.flatten
+      options.theme.for(types.flatten).codes_for(options.palette)
     end
 
     def indentation(size)

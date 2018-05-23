@@ -40,6 +40,8 @@ module Lister
     property magic : Magic::Magic
     property magic_mime : Magic::Magic
     property terminal = Terminal.new
+
+    property palette : Int32 = Int32::MAX
     property theme : Themer::Theme = DEFAULT_THEME
 
     def initialize

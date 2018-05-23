@@ -41,10 +41,10 @@ module Themer
     end
 
     def codes
-      @codes || regen_codes
+      @codes ||= codes_for(color_depth: 16_000_000)
     end
 
-    def regen_codes(color_depth = 16_000_000)
+    def codes_for(color_depth : Int32)
       new_codes = ""
 
       if tmp_s = style
@@ -73,7 +73,7 @@ module Themer
         new_codes += "4#{c16 tmp_bg16}"
       end
 
-      @codes = "\e[" + new_codes + "m"
+      "\e[" + new_codes + "m"
     end
 
     def s(name : STYLE)

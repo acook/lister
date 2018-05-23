@@ -11,7 +11,7 @@ module Lister
     # this is the method which starts the ball rolling
     # but if #set_options hasn't been run it will implode
     def run
-      longest = paths.map{|path| path.size }.max
+      longest = paths.map{ |path| path.size }.max
 
       paths.each do |path|
         Formatter.new(wrap(path), options).render longest
@@ -36,15 +36,31 @@ module Lister
     def parse_args(args)
       skip = nil
       args.each.with_index do |arg, i|
-        if false
-          # noop
+        if arg == "--"
+          @paths += args[i..-1]
+          return # stop processing commandline arguments
         elsif arg == "-A"
           @options.show_hidden = true
         elsif arg == "--colors"
           @options.theme = Themer::Theme.load args[i + 1]
           skip = i + 1
+        elsif arg == "--color-depth"
+          depth = args[i + 1]
+          if depth == "16"
+            @options.palette = 16
+          elsif depth == "256"
+            @options.palette = 256
+          elsif depth.downcase == "true" || depth.downcase == "tc" || depth == "16000000"
+            @options.palette = 16_000_000
+          else
+            puts "unknown argument to --color-depth: #{depth}"
+            usage
+            exit 1
+          end
+          skip = i + 1
         elsif %w[-h --help].includes? arg
           usage
+          exit 0
         elsif arg == "--list-types"
           puts Formatter.list_types(options)
           exit 0
@@ -82,8 +98,11 @@ module Lister
       puts "usage: #{this} [-A] [-R] [--recurse DEPTH] [<paths>]"
       puts "\tshows colorized and structured libmagic types"
       puts
+      puts "\t--\t\tstop processing commandline options"
+      puts "\t\t\tinterpret remaining arguments as paths"
       puts "\t-A\t\tshow hidden files (excluding . and ..)"
       puts "\t--colors FILE\tuse specified YAML file as color theme"
+      puts "\t--color-depth DEPTH\tuse the 16, 256, or true color palette"
       puts "\t-h\t\tdisplay usage information (you're looking at it!)"
       puts "\t-K\t\tshow type names as seen by Lister"
       puts "\t-Km\t\tshow MIME types from libMagic"
@@ -97,7 +116,6 @@ module Lister
       puts "\tenvironment variables:"
       puts "\tLISTER_COLORS\tfull path to the Lister theme YAML file"
       puts "\t\t\tcan be overridden on the commandline with --theme"
-      exit 0
     end
   end
 end
