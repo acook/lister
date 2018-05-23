@@ -32,7 +32,9 @@ module Lister
         for "doom", style: "bold", fg16: "green"
     end
 
+    property show_hidden : Bool = false
     property recurse : Int8 = 1_i8
+
     property magic : Magic::Magic
     property terminal = Terminal.new
     property theme : Themer::Theme = DEFAULT_THEME

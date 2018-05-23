@@ -29,14 +29,19 @@ class Pathname
     File.directory? path
   end
 
-  def children
+  def children(show_hidden = false)
     return unless directory?
-    skip = %w[. ..]
+    skip = [
+      /^\.$/,
+      /^\.\.$/
+    ]
+
+    skip << /^\./ unless show_hidden
 
     children = Array(Pathname).new
     Dir.open(path) do |dir|
       dir.each do |entry|
-        next if skip.includes? entry
+        next if skip.any? {|pattern| pattern =~ entry }
         children << self.class.new self.join entry
       end
     end

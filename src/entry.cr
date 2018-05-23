@@ -52,7 +52,7 @@ module Lister
       super *args
 
       begin
-        @raw_children = path.children || Array(Pathname).new
+        @raw_children = path.children(options.show_hidden) || Array(Pathname).new
         @children_count = raw_children.size
 
         if children_count > 0

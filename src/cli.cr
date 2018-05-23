@@ -23,11 +23,13 @@ module Lister
     def parse_args(args)
       skip = nil
       args.each.with_index do |arg, i|
-        if arg == "-r"
+        if arg == "-R"
           @options.recurse = Int8::MAX
         elsif arg == "--recurse"
           @options.recurse += args[i + 1].to_i
           skip = i + 1
+        elsif arg == "-A"
+          @options.show_hidden = true
         elsif %w[-h --help].includes? arg
           usage
         elsif skip != i
@@ -53,14 +55,15 @@ module Lister
     def usage
       this = Pathname.new(PROGRAM_NAME).basename.to_s
 
-      puts "usage: #{this} [-r] [--recurse DEPTH] [<paths>]"
+      puts "usage: #{this} [-A] [-R] [--recurse DEPTH] [<paths>]"
       puts "\tshows colorized and structured libmagic types"
       puts
-      puts "\t-r\trecurse infinite"
-      puts "\t--recurse DEPTH\t recurse to depth"
-      puts "\t-h\tshow this help"
-      puts "\t<paths>\ta list of zero or more paths"
-      puts "\t\twill scan PWD if no path supplied"
+      puts "\t-A\t\tshow hidden files (excluding . and ..)"
+      puts "\t-h\t\tshow this help"
+      puts "\t-R\t\trecurse infinite"
+      puts "\t--recurse DEPTH\trecurse to depth"
+      puts "\t<paths>\t\ta list of zero or more paths"
+      puts "\t\t\twill scan PWD if no path supplied"
       exit 0
     end
   end
