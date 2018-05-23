@@ -48,7 +48,7 @@ module FT
     DEFAULT_TYPES.fetch name, DEFAULT_TYPES[:DEFAULT]
   end
 
-  def self.match : TypeNest
+  def self.match(fallback = DEFAULT_TYPES[:DEFAULT].list) : TypeNest
     types = TypeNest.new
     DEFAULT_TYPES.map do |_, node|
       next if node.regex.nil?
@@ -59,7 +59,7 @@ module FT
     end
 
     if types.empty?
-      [DEFAULT_TYPES[:DEFAULT].list]
+      [fallback]
     else
       types.reduce(TypeNest.new) do |acc, t1|
         if types.any?{ |t2| t1 != t2 && t1.size == (t1 & t2).size }

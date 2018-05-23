@@ -77,8 +77,7 @@ module Themer
       end
 
       new_codes_string = new_codes.join(";")
-
-      "\e[" + (new_codes_string.empty? ? "0" : new_codes_string) + "m"
+      new_codes_string.empty? ? "" : "\e[" + new_codes_string + "m"
     end
 
     def s(name : StrNil)
@@ -187,6 +186,8 @@ module Themer
       found = nil
       ids.find do |id|
         found = colormap.fetch id, nil
+        found = Color.new if id == "none"
+        found
       end
 
       found || @default || raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")

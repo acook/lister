@@ -32,23 +32,75 @@ module Lister
     end
 
     def line(entry, longest, indent)
-      info = [indentation(indent), entry.name.ljust(longest), div]
-      if options.show_type_names
-        typeinfo = FT.match(entry.type).reduce(Array(String).new) do |acc, types|
-          acc << (types.is_a?(Array) ? types : [types]).reverse.join("/")
-        end
+      nonvisible = ""
+      sigil = ""
 
-        info += [typeinfo.join(", ")]
-      elsif options.show_mime_types
-        info += [entry.mime]
-      else
-        info += [entry.type]
-      end
+      info = Array(String).new
+      info << indentation(indent)
+
+      info << entry.name
+      info << (nonvisible += attr_color entry)
+      info << (sigil += attr entry)
+      info << (color(entry).to_s.tap{ |c| nonvisible += c })
+
+      info << just entry.name + sigil, longest + 1
+      info << div
+
+      info << type_info entry
+
       text = info.join
-      if text.size > console_width
+
+      if text.size - nonvisible.size > console_width
         text = text[0,(console_width-1)] + "…"
       end
+
+      # inject color codes at this point instead of earlier
+
       print color(entry), text, options.theme.reset, "\n"
+    end
+
+    def just(text, fit, fill = " ")
+      if text.size >= fit
+        ""
+      else
+        fill * (fit - text.size)
+      end
+    end
+
+    def attr(entry) : String
+      case
+      when entry.path.symlink?
+        "@"
+      when entry.path.directory?
+        "/"
+      when entry.path.executable?
+        "*"
+      else
+        ""
+      end
+    end
+
+    def attr_color(entry) : String
+      attr_types = FT.match(fallback: ["none"]) { |r| r =~ attr(entry) }
+      options.theme.for(attr_types.flatten).codes_for(options.palette)
+    end
+
+    def type_info(entry)
+      if options.show_type_names
+        type_names entry
+      elsif options.show_mime_types
+        entry.mime
+      else
+        entry.type
+      end
+    end
+
+    def type_names(entry)
+      typeinfo = FT.match(entry.type).reduce(Array(String).new) do |acc, types|
+        acc << (types.is_a?(Array) ? types : [types]).reverse.join("/")
+      end
+
+      typeinfo.join(", ")
     end
 
     def color(entry)

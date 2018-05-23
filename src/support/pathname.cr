@@ -64,6 +64,10 @@ class Pathname
     File.symlink? path
   end
 
+  def executable?
+    File.executable? path
+  end
+
   def <=>(other)
     path <=> other.path
   end
