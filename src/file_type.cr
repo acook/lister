@@ -58,7 +58,17 @@ module FT
       end
     end
 
-    !types.empty? ? types : [DEFAULT_TYPES[:DEFAULT].list]
+    if types.empty?
+      [DEFAULT_TYPES[:DEFAULT].list]
+    else
+      types.reduce(TypeNest.new) do |acc, t1|
+        if types.any?{ |t2| t1 != t2 && t1.size == (t1 & t2).size }
+          acc
+        else
+          acc = acc + [t1]
+        end
+      end
+    end
   end
 
   def self.match(type) : TypeNest
