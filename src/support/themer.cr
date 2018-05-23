@@ -85,15 +85,7 @@ module Themer
     end
 
     def ct(indicator : CTrue)
-      if indicator[0] == '#'
-        hex indicator
-      else
-        hex lookup_rgb indicator
-      end
-    end
-
-    def lookup_rgb(color_name)
-      "#FFFFFF"
+      hex indicator
     end
 
     def hex(hexcode : String)
