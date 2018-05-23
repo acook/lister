@@ -1,4 +1,8 @@
 module FT
+  alias TypeList = Array(String)
+  alias TypeNest = Array(TypeList)
+  alias TypeMap  = Hash(Symbol, Node)
+
   class Node
     property name   : Symbol
     property parent : Node | Nil
@@ -7,7 +11,7 @@ module FT
     def initialize(@name, @parent, @regex)
     end
 
-    def list
+    def list : TypeList
       parent = @parent
       this   = [name.to_s]
       if parent
@@ -19,35 +23,33 @@ module FT
   end
 
   class Builder
-    property nodes = Hash(Symbol, Node).new
+    property nodes = TypeMap.new
 
-    def type(name, parent : Symbol | Node | Nil, regex : Regex | Nil = nil)
+    def type(name, parent : Symbol | Node | Nil = nil, regex : Regex | Nil = nil) : Node
       if parent.is_a? Symbol
         parent = nodes[parent]
       end
 
       nodes[name] = Node.new name, parent, regex
-      nodes
     end
 
-    def default(name)
+    def default(name) : Node
       nodes[:DEFAULT] = Node.new name, nil, nil
-      nodes
     end
   end
 
-  def self.build
-    d = Builder.new
-    filetypes = with d yield
-    filetypes
+  def self.build : TypeMap
+    Builder.new.tap do |b|
+      with b yield
+    end.nodes
   end
 
-  def self.[](name)
+  def self.[](name) : Node
     DEFAULT_TYPES.fetch name, DEFAULT_TYPES[:DEFAULT]
   end
 
-  def self.match
-    types = Array(String).new
+  def self.match : TypeNest
+    types = TypeNest.new
     DEFAULT_TYPES.map do |_, node|
       next if node.regex.nil?
 
@@ -56,13 +58,11 @@ module FT
       end
     end
 
-    !types.empty? ? types : DEFAULT_TYPES[:DEFAULT].list
+    !types.empty? ? types : [DEFAULT_TYPES[:DEFAULT].list]
   end
 
-  def self.match(type)
-    types = self.match do |r|
-      r =~ type
-    end
+  def self.match(type) : TypeNest
+    self.match { |r| r =~ type }
   end
 
   DEFAULT_TYPES = build do
