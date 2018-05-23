@@ -55,7 +55,7 @@ module FT
         types = [node.list] + types
       end
     end
-    
+
     !types.empty? ? types : DEFAULT_TYPES[:DEFAULT].list
   end
 

@@ -45,6 +45,11 @@ module Lister
           skip = i + 1
         elsif %w[-h --help].includes? arg
           usage
+        elsif arg == "--list-types"
+          puts FT::DEFAULT_TYPES.keys.sort.map{|type|
+            options.theme.for(FT.match(type.to_s).flatten).to_s + type.to_s + options.theme.reset.to_s
+          }.join(", ")
+          exit 0
         elsif arg == "-K"
           @options.show_type_names = true
         elsif arg == "-Km"
@@ -84,6 +89,8 @@ module Lister
       puts "\t-h\t\tdisplay usage information (you're looking at it!)"
       puts "\t-K\t\tshow type names as seen by Lister"
       puts "\t-Km\t\tshow MIME types from libMagic"
+      puts "\t--list-types\tdisplay list of known themeable file types"
+      puts "\t\t\tin the associated color from the current theme"
       puts "\t-R\t\trecurse infinite"
       puts "\t--recurse DEPTH\trecurse to depth"
       puts "\t<paths>\t\ta list of zero or more paths"
