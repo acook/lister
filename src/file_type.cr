@@ -47,15 +47,22 @@ module FT
   end
 
   def self.match
+    types = Array(String).new
     DEFAULT_TYPES.map do |_, node|
       next if node.regex.nil?
 
       if yield node.regex
-        return node.list
+        types = [node.list] + types
       end
     end
+    
+    !types.empty? ? types : DEFAULT_TYPES[:DEFAULT].list
+  end
 
-    DEFAULT_TYPES[:DEFAULT].list
+  def self.match(type)
+    types = self.match do |r|
+      r =~ type
+    end
   end
 
   DEFAULT_TYPES = build do

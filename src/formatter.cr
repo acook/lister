@@ -26,7 +26,19 @@ module Lister
     end
 
     def line(entry, longest, indent)
-      text = [indentation(indent), entry.name.ljust(longest), div, entry.type].join
+      info = [indentation(indent), entry.name.ljust(longest), div]
+      if options.show_type_names
+        typeinfo = FT.match(entry.type).reduce(Array(String).new) do |acc, types|
+          acc << (types.is_a?(Array) ? types : [types]).reverse.join("/")
+        end
+
+        info += [typeinfo.join(", ")]
+      elsif options.show_mime_types
+        info += [entry.mime]
+      else
+        info += [entry.type]
+      end
+      text = info.join
       if text.size > console_width
         text = text[0,(console_width-1)] + "…"
       end
@@ -37,7 +49,8 @@ module Lister
       types = FT.match do |r|
         r =~ entry.type
       end
-      options.theme.for types
+
+      options.theme.for types.flatten
     end
 
     def indentation(size)

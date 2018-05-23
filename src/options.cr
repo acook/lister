@@ -33,9 +33,12 @@ module Lister
     end
 
     property show_hidden : Bool = false
+    property show_type_names : Bool = false
+    property show_mime_types : Bool = false
     property recurse : Int8 = 1_i8
 
     property magic : Magic::Magic
+    property magic_mime : Magic::Magic
     property terminal = Terminal.new
     property theme : Themer::Theme = DEFAULT_THEME
 
@@ -44,9 +47,8 @@ module Lister
       #   which is an extremely limited subset of possible types
       #   the below line could be used instead, but
       #   the current flags also search compressed files
-      #flags = Magic::LibMagic::Flags::NONE.to_i
-      flags = Magic::LibMagic::Flags::COMPRESS.to_i
-      @magic = Magic::Magic.new flags: flags
+      @magic = Magic::Magic.new flags: Magic::LibMagic::Flags::COMPRESS.to_i
+      @magic_mime = Magic::Magic.new flags: Magic::LibMagic::Flags::MIME.to_i
     end
 
     def recurse?
