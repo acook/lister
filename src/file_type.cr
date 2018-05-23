@@ -71,6 +71,10 @@ module FT
     type :broken, nil, /broken|NOT FOUND|cannot open/
     type :directory, nil, /directory/
 
+    type :text, nil
+    type :ascii, :text, /ASCII/
+    type :utf8, :text, /UTF-8/
+
     type :source, nil
     type :shell, :source, /shell|SHELL/
     type :bash, :shell, /bash|Bourne/
