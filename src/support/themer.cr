@@ -23,7 +23,7 @@ module Themer
     property bg256 : C256
 
     def set(
-      style : STYLE  = nil,
+      style : STYLE = nil,
       fg    : CTrue = nil, bg    : CTrue = nil,
       fg16  : C16   = nil, bg16  : C16   = nil,
       fg256 : C256  = nil, bg256 : C256  = nil
@@ -34,8 +34,8 @@ module Themer
       @bg    = bg    if bg    && !bg.empty?
       @fg16  = fg16  if fg16  && !fg16.empty?
       @bg16  = bg16  if bg16  && !bg16.empty?
-      @fg256 = fg256 if fg256
-      @bg256 = bg256 if bg256
+      @fg256 = fg256 if fg256 && !fg256.empty?
+      @bg256 = bg256 if bg256 && !bg256.empty?
 
       self # return self for chaining
     end
@@ -109,7 +109,7 @@ module Themer
         bg256: bg256,
         fg16: fg16,
         bg16: bg16
-      }
+    }.to_h.delete_if {|_,v| !v || v.empty? }
     end
 
     def to_yaml(*args)
@@ -167,10 +167,10 @@ module Themer
       data = Hash(String, Colors).new
       yaml.each do |k,v|
         colors = Colors.new.tap do |c|
-          c.set style: v["style"].to_s,
-            fg:    v["fg"].to_s,    bg:    v["bg"].to_s,
-            fg16:  v["fg16"].to_s,  bg16:  v["bg16"].to_s,
-            fg256: v["fg256"].to_s, bg256: v["bg256"].to_s
+          c.set style: v["style"]?.to_s,
+            fg:    v["fg"]?.to_s,    bg:    v["bg"]?.to_s,
+            fg16:  v["fg16"]?.to_s,  bg16:  v["bg16"]?.to_s,
+            fg256: v["fg256"]?.to_s, bg256: v["bg256"]?.to_s
         end
 
         if k.to_s == "DEFAULT"
