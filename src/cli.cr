@@ -9,7 +9,7 @@ module Lister
     property paths = Array(String).new
 
     # this is the method which starts the ball rolling
-    # but if #parse_args hasn't been run it will implode
+    # but if #set_options hasn't been run it will implode
     def run
       longest = paths.map{|path| path.size }.max
 
@@ -17,6 +17,19 @@ module Lister
         Formatter.new(wrap(path), options).render longest
       end
 
+    end
+
+    def set_options(env, args)
+      parse_env(env)
+      parse_args(args)
+      self
+    end
+
+    def parse_env(env)
+      if theme = env["LISTER_THEME"]?
+        @options.theme = Themer::Theme.load theme
+      end
+      self
     end
 
     # this does a hack job of parsing commandline arguments
@@ -27,6 +40,9 @@ module Lister
           # noop
         elsif arg == "-A"
           @options.show_hidden = true
+        elsif arg == "--colors"
+          @options.theme = Themer::Theme.load args[i + 1]
+          skip = i + 1
         elsif %w[-h --help].includes? arg
           usage
         elsif arg == "-K"
@@ -49,7 +65,6 @@ module Lister
       self # make chainable since there is no meaningful return value
     end
 
-
     def wrap(path)
       if File.directory? path
         Directory.new path, options
@@ -65,6 +80,7 @@ module Lister
       puts "\tshows colorized and structured libmagic types"
       puts
       puts "\t-A\t\tshow hidden files (excluding . and ..)"
+      puts "\t--colors FILE\tuse specified YAML file as color theme"
       puts "\t-h\t\tdisplay usage information (you're looking at it!)"
       puts "\t-K\t\tshow type names as seen by Lister"
       puts "\t-Km\t\tshow MIME types from libMagic"
@@ -72,6 +88,10 @@ module Lister
       puts "\t--recurse DEPTH\trecurse to depth"
       puts "\t<paths>\t\ta list of zero or more paths"
       puts "\t\t\twill scan PWD if no path supplied"
+      puts
+      puts "\tenvironment variables:"
+      puts "\tLISTER_COLORS\tfull path to the Lister theme YAML file"
+      puts "\t\t\tcan be overridden on the commandline with --theme"
       exit 0
     end
   end
