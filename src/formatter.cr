@@ -4,7 +4,7 @@ module Lister
   class Formatter
     def self.list_types(options)
       FT::DEFAULT_TYPES.keys.sort.map do |type|
-        options.theme.for(FT.match(type.to_s).flatten).to_s + type.to_s + options.theme.reset.to_s
+        options.theme.for([type.to_s]).codes_for(options.palette) + type.to_s + options.theme.reset.to_s
       end.join(", ")
     end
 
@@ -81,8 +81,7 @@ module Lister
     end
 
     def attr_color(entry) : String
-      attr_types = FT.match(fallback: ["none"]) { |r| r =~ attr(entry) }
-      options.theme.for(attr_types.flatten).codes_for(options.palette)
+      options.theme.for([attr(entry)]).codes_for(options.palette)
     end
 
     def type_info(entry)

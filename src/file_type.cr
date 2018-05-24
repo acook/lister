@@ -78,6 +78,10 @@ module FT
   DEFAULT_TYPES = build do
     default :unknown
 
+    # for sigils, not actually used but here for --list-types
+    type :/ #, nil, /^\/$/
+    type :* #, nil, /^\*$/
+
     type :broken, nil, /broken|NOT FOUND|cannot open/
     type :directory, nil, /directory/
 
