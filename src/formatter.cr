@@ -32,38 +32,35 @@ module Lister
     end
 
     def line(entry, longest, indent)
-      nonvisible = ""
-      sigil = ""
+      info = String.new
+      info += indentation(indent)
 
-      info = Array(String).new
-      info << indentation(indent)
+      info += entry.name
+      pre_sigil = info.size
+      info += attr entry
+      post_sigil = info.size
 
-      info << entry.name
-      info << (nonvisible += attr_color entry)
-      info << (sigil += attr entry)
-      info << (color(entry).to_s.tap{ |c| nonvisible += c })
+      info += just (entry.name + attr entry).size, longest + 1
+      info += div
 
-      info << just entry.name + sigil, longest + 1
-      info << div
+      info += type_info entry
 
-      info << type_info entry
-
-      text = info.join
-
-      if text.size - nonvisible.size > console_width
-        text = text[0,(console_width-1)] + "…"
+      if info.size > console_width
+        info = info[0,(console_width-1)] + "…"
       end
 
-      # inject color codes at this point instead of earlier
+      # inject the color codes so we don't have to worry about them earlier
+      info = info.insert post_sigil, color(entry)
+      info = info.insert pre_sigil, attr_color(entry)
 
-      print color(entry), text, options.theme.reset, "\n"
+      print color(entry), info, options.theme.reset, "\n"
     end
 
-    def just(text, fit, fill = " ")
-      if text.size >= fit
+    def just(len, fit, fill = " ")
+      if len >= fit
         ""
       else
-        fill * (fit - text.size)
+        fill * (fit - len)
       end
     end
 
