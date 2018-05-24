@@ -105,7 +105,7 @@ module FT
       type :x86_32, :program, /(32-bit).*executable.*(x86|i386|Intel 80386)/
       type :x86_64, :program, /(64-bit).*executable.*(x86-64)/
       type :arm_32, :program, /(32-bit).*executable.*(ARM)/
-      type :arm_63, :program, /(64-bit).*executable.*(ARM)/
+      type :arm_64, :program, /(64-bit).*executable.*(ARM)/
 
     type :compressed, nil, /archive/
     type :wad, :compressed, /doom|PWAD/
