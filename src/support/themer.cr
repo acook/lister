@@ -76,7 +76,8 @@ module Themer
         new_codes << "4#{c16 bg16}" unless bg16 == "none"
       end
 
-      new_codes_string = new_codes.join(";")
+      # this should just be ";" but some terminals can't handle true color fg and bg in a single go
+      new_codes_string = new_codes.join("m\e[")
       new_codes_string.empty? ? "" : "\e[" + new_codes_string + "m"
     end
 
