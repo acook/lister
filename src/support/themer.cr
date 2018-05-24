@@ -101,6 +101,10 @@ module Themer
       "#{r};#{g};#{b}"
     end
 
+    def empty?(color_depth = 16_000_000)
+      codes_for(color_depth).empty?
+    end
+
     def to_s(io)
       io << codes
     end
