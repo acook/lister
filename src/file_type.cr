@@ -82,6 +82,7 @@ module FT
     type :sigil
       type :/, :sigil #, /^\/$/
       type :*, :sigil #, /^\*$/
+      type :"@", :sigil #, /^\@$/
 
     type :broken, nil, /broken|NOT FOUND|cannot open/
     type :directory, nil, /directory/

@@ -11,9 +11,11 @@ module Lister
     DEFAULT_THEME = Themer.build do
       default style: "normal"
 
-      for "*", style: "normal"
+      for "sigil", style16: "bold", fg16: "white", fg: "#FFFFFF"
 
-      for "broken", bg16: "red"
+      for "broken",
+        style: "crossed_out" , fg: "#FFFFFF", bg: "#FF0000",
+        style16: "crossed_out", fg16: "white", bg16: "red"
       for "directory",
         style:    "none", fg: "#999999",
         style256: "none", fg256: "244",
@@ -25,7 +27,7 @@ module Lister
           #for "zsh", fg16: "blue"
         for "script", fg16: "white"
           for "perl", style: "bold", fg16: "yellow"
-          for "ruby", fg16: "red"
+          for "ruby", fg16: "red", fg: "#CC0000"
       for "program", fg16: "blue"
         for "x86_32", fg: "#0071c5"
         for "x86_64", fg: "#009A66"
@@ -37,7 +39,7 @@ module Lister
       for "image", style: "bold", fg16: "magenta"
         # gif
         # jpeg
-      for "compressed", style: "bold"
+      for "compressed", style16: "bold"
         for "zip", fg: "#11699b"
         for "doom", style: "bold", fg: "#2A5225", style16: "bold", fg16: "green"
     end
