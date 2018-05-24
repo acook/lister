@@ -56,7 +56,12 @@ module Lister
 
       begin
         @raw_children = path.children(options.show_hidden) || Array(Pathname).new
-        @children_count = raw_children.size
+
+        if path.symlink?
+          @children_count = -1
+        else
+          @children_count = raw_children.size
+        end
 
         if children_count > 0
           @longest = raw_children.map{|c| c.basename.to_s.size }.max.to_i16
@@ -92,6 +97,8 @@ module Lister
         super + " (#{children_count})"
       elsif children_count == 0
         super + " (empty)"
+      elsif children_count == -1 && path.symlink?
+        super + " (#{path.entries.size})"
       elsif children_count == -1
         super + " (permission denied)"
       else

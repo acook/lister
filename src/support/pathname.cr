@@ -41,11 +41,15 @@ class Pathname
     children = Array(Pathname).new
     Dir.open(path) do |dir|
       dir.each do |entry|
-        next if skip.any? {|pattern| pattern =~ entry }
+        next if symlink? || skip.any? {|pattern| pattern =~ entry }
         children << self.class.new self.join entry
       end
     end
     children
+  end
+
+  def entries()
+    Dir.entries(path)
   end
 
   def join(*args)
