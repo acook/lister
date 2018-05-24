@@ -4,7 +4,7 @@ module Lister
   class Formatter
     def self.list_types(options)
       FT::DEFAULT_TYPES.keys.sort.map do |type|
-        options.theme.for(FT::DEFAULT_TYPES[type].list).codes_for(options.palette) + type.to_s + options.theme.reset.to_s
+        options.theme.for(FT[type].list).codes_for(options.palette) + type.to_s + options.theme.reset.to_s
       end.join(", ")
     end
 
