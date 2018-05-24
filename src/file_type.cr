@@ -81,29 +81,34 @@ module FT
     type :broken, nil, /broken|NOT FOUND|cannot open/
     type :directory, nil, /directory/
 
-    type :text, nil
-    type :ascii, :text, /ASCII/
-    type :utf8, :text, /UTF-8/
+    type :text
+      type :ascii, :text, /ASCII/
+      type :utf8, :text, /UTF-8/
 
-    type :source, nil
-    type :shell, :source, /shell|SHELL/
-    type :bash, :shell, /bash|Bourne/
-    type :zsh, :shell, /zsh/
-    type :script, :source
-    type :perl, :script, /perl|Perl/
-    type :ruby, :script, /ruby|Ruby/
-    type :python, :script, /python/
+    type :document
+      type :pdf, :document, /PDF/
 
-    type :program, nil, /program/
-    type :x86, :program, /x86|i386/
-    type :arm, :program
+    type :source
+      type :shell, :source, /shell|SHELL/
+        type :bash, :shell, /bash|Bourne/
+        type :zsh, :shell, /zsh/
+      type :script, :source
+        type :perl, :script, /perl|Perl/
+        type :ruby, :script, /ruby|Ruby/
+        type :python, :script, /python/
 
-    type :compressed, nil
+    type :program, nil, /program|executable/
+      type :x86_32, :program, /(32-bit).*executable.*(x86|i386|Intel 80386)/
+      type :x86_64, :program, /(64-bit).*executable.*(x86-64)/
+      type :arm_32, :program, /(32-bit).*executable.*(ARM)/
+      type :arm_63, :program, /(64-bit).*executable.*(ARM)/
+
+    type :compressed, nil, /archive/
     type :wad, :compressed, /doom|PWAD/
-    type :zip, :compressed
+    type :zip, :compressed, /Zip/
 
     type :unix, nil
-    type :link, :unix, /link|socket/
+    type :link, :unix, /symbolic link|socket/
     type :socket, :unix
 
     type :image, nil
