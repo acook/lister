@@ -34,6 +34,7 @@ module Lister
 
     # this does a hack job of parsing commandline arguments
     def parse_args(args)
+      no_run = false
       skip = nil
       args.each.with_index do |arg, i|
         if arg == "--"
@@ -60,10 +61,10 @@ module Lister
           skip = i + 1
         elsif %w[-h --help].includes? arg
           usage
-          exit 0
+          no_run = true
         elsif arg == "--list-types"
           puts Formatter.list_types(options)
-          exit 0
+          no_run = true
         elsif arg == "-K"
           @options.show_type_names = true
         elsif arg == "-Km"
@@ -77,6 +78,10 @@ module Lister
           @paths << arg
         end
       end
+
+      # exiting here instead of inside the arg parser lets users do things like:
+      # `lister --color-depth 16 --list-types --color-depth 256 --list-types`
+      exit 0 if no_run
 
       # search the current directory if nothing else
       @paths << "." if @paths.empty?
