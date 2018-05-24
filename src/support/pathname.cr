@@ -72,6 +72,10 @@ class Pathname
     File.executable? path
   end
 
+  def pipe?
+    File::Stat.new(path.to_s).pipe?
+  end
+
   def <=>(other)
     path <=> other.path
   end

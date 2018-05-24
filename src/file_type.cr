@@ -85,6 +85,8 @@ module FT
       type :"@", :sigil #, /^\@$/
 
     type :broken, nil, /broken|NOT FOUND|cannot open/
+      type :broken_symlink, :broken, /broken symbolic link/
+
     type :directory, nil, /directory/
 
     type :text
@@ -113,11 +115,11 @@ module FT
     type :wad, :compressed, /doom|PWAD/
     type :zip, :compressed, /Zip/
 
-    type :unix, nil
-    type :link, :unix, /symbolic link|socket/
-    type :socket, :unix
+    type :unix
+      type :link, :unix, /^(?!broken).*symbolic link|socket/
+      type :named_pipe, :unix, /^fifo \(named pipe\)/
 
-    type :image, nil
+    type :image
     type :gif, :image, /GIF/
     type :jpg, :image
   end

@@ -68,6 +68,8 @@ module Lister
       case
       when entry.path.symlink?
         "@"
+      when entry.path.pipe?
+        "|"
       when entry.path.directory?
         "/"
       when entry.path.executable?
