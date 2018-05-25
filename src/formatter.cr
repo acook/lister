@@ -44,8 +44,10 @@ module Lister
 
       info += type_info entry
 
-      if info.size + (indent * 2) > console_width
-        info = info[0,(console_width-1)] + "…"
+      info_width = info.size + (indent * 2)
+      if info_width > console_width
+        truc_width = console_width - (indent * 2) - 1
+        info = info[0, truc_width] + "…"
       end
 
       # inject the color codes so we don't have to worry about them earlier
