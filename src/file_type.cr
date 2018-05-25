@@ -143,6 +143,12 @@ module FT
       type :jpg, :image, /JPEG/
       type :png, :image, /PNG/
 
+    type :audio
+      type :soundfont, :audio, /SoundFont/
+      type :wave, :audio, /RIFF|AIFF/
+      type :vorbis, :audio, /Vorbis audio/
+      type :mpeg, :audio, /^Audio.*MPEG/
+
     type :broken, nil, /broken|NOT FOUND|cannot open/
   end
 
