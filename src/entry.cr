@@ -11,6 +11,7 @@ module Lister
     property children_count = 0
     property raw_children = Array(Pathname).new
     property type : String
+    property mime : String
     property longest : Int16
     property options : Options
 
@@ -24,10 +25,12 @@ module Lister
       if path.exists? || path.symlink?
         raw_type = options.magic.file path.to_s
         # remove the full path prefix from libmagic's result
-        @type = raw_type.sub(/^#{path.to_s}:\s+/, "").strip
+        @type = raw_type.sub(/^#{path}:\s+/, "").strip
+        @mime = options.magic_mime.file path.to_s
       else
         # this will happen if the user specifies a nonexistent file
         @type = "(FILE NOT FOUND)"
+        @mime = "(FILE NOT FOUND)"
       end
     end
 
@@ -52,8 +55,13 @@ module Lister
       super *args
 
       begin
-        @raw_children = path.children || Array(Pathname).new
-        @children_count = raw_children.size
+        @raw_children = path.children(options.show_hidden) || Array(Pathname).new
+
+        if path.symlink?
+          @children_count = -1
+        else
+          @children_count = raw_children.size
+        end
 
         if children_count > 0
           @longest = raw_children.map{|c| c.basename.to_s.size }.max.to_i16
@@ -89,6 +97,8 @@ module Lister
         super + " (#{children_count})"
       elsif children_count == 0
         super + " (empty)"
+      elsif children_count == -1 && path.symlink?
+        super + " (#{path.entries.size})"
       elsif children_count == -1
         super + " (permission denied)"
       else

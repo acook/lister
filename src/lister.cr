@@ -1,7 +1,7 @@
 require "./cli"
 
 begin
-  Lister::CLI.new.parse_args(ARGV).run
+  Lister::CLI.new.set_options(ENV, ARGV).run
 ensure
   # make sure we don't make a mess of the terminal colors
   print "\e[0m"

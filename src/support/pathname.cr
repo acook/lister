@@ -9,38 +9,44 @@ class Pathname
   end
 
   property path : String
+  property stat : File::Stat | Nil
 
-  def initialize(new_path)
-    case new_path
-    when Pathname
-      @path = new_path.path
-    when String
-      @path = new_path
-    else
-      raise "invalid path supplied"
-    end
+  def initialize(new_path : String | Pathname, no_stat = false)
+    @path = new_path.to_s
+    @stat = nil
+
+    restat unless no_stat
   end
 
   def basename
-    self.class.new File.basename path
+    self.class.new File.basename(path), no_stat: true
   end
 
   def directory?
     File.directory? path
   end
 
-  def children
+  def children(show_hidden = false)
     return unless directory?
-    skip = %w[. ..]
+    skip = [
+      /^\.$/,
+      /^\.\.$/
+    ]
+
+    skip << /^\./ unless show_hidden
 
     children = Array(Pathname).new
     Dir.open(path) do |dir|
       dir.each do |entry|
-        next if skip.includes? entry
-        children << self.class.new self.join entry
+        next if symlink? || skip.any? {|pattern| pattern =~ entry }
+        children << self.class.new File.expand_path(entry, self.expand_path.to_s)
       end
     end
     children
+  end
+
+  def entries()
+    Dir.entries(path)
   end
 
   def join(*args)
@@ -59,11 +65,44 @@ class Pathname
     File.symlink? path
   end
 
+  def executable?
+    File.executable? path
+  end
+
+  def restat
+    begin
+      @stat = File.lstat File.expand_path path
+    rescue ex # don't freak out if the path doesn't exist
+      raise ex unless ex.is_a?(Errno) && ex.errno == Errno::ENOENT
+    end
+    !!@stat
+  end
+
+  def pipe?
+    (s = stat) && s.pipe?
+  end
+
+  def socket?
+    (s = stat) && s.socket?
+  end
+
+  def blockdev?
+    (s = stat) && s.blockdev?
+  end
+
+  def chardev?
+    (s = stat) && s.chardev?
+  end
+
   def <=>(other)
     path <=> other.path
   end
 
   def to_s
     path
+  end
+
+  def to_s(io)
+    io << path
   end
 end

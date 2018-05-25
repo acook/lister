@@ -7,171 +7,90 @@ module Themer
     new_theme
   end
 
-  alias COLOR = Symbol | Int32 | String | Nil
-  alias STYLE = Symbol | Nil
+  alias StrNil = String | Nil
 
-  class Colors
-    property codes : String = ""
+  class Color
+    property codes : StrNil
 
-    def set(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      @codes = "\e["
+    property style : StrNil
+    property fg    : StrNil
+    property bg    : StrNil
 
-      if style
-        @codes += "#{s style};"
-      end
+    property style16 : StrNil
+    property fg16    : StrNil
+    property bg16    : StrNil
 
-      case bg
-      when Symbol # 16 colors by name
-        @codes += "4#{c bg};"
-      when Int # 256 colors by number
-        @codes += "48;5;#{bg};"
-      when String # true color by hex string
-        @codes += "48;2;#{hex bg};"
-      end
+    property style256 : StrNil
+    property fg256    : StrNil
+    property bg256    : StrNil
 
-      case fg
-      when Symbol # 16 colors by name
-        @codes += "3#{c fg};"
-      when Int # 256 colors by number
-        @codes += "38;5;#{fg};"
-      when String # true color by hex string
-        @codes += "38;2;#{hex fg};"
-      end
+    def set(
+      style    : StrNil = nil, fg    : StrNil = nil, bg    : StrNil = nil,
+      style16  : StrNil = nil, fg16  : StrNil = nil, bg16  : StrNil = nil,
+      style256 : StrNil = nil, fg256 : StrNil = nil, bg256 : StrNil = nil
+    )
 
-      @codes += "m"
+      @style = style if style && !style.empty?
+      @fg    = fg    if fg    && !fg.empty?
+      @bg    = bg    if bg    && !bg.empty?
+
+      @style16 = style16 if style16 && !style16.empty?
+      @fg16    = fg16    if fg16    && !fg16.empty?
+      @bg16    = bg16    if bg16    && !bg16.empty?
+
+      @style256 = style256 if style256 && !style256.empty?
+      @fg256    = fg256    if fg256    && !fg256.empty?
+      @bg256    = bg256    if bg256    && !bg256.empty?
 
       self # return self for chaining
     end
 
-    def parse(code : String) : ThemeColors | NoReturn
-      raise ArgumentError.new(
-        "doesn't begin with escape sequence, got #{code[0].inspect} instead"
-      ) unless code[0] == '\e'
-      raise ArgumentError.new(
-        "doesn't begin with esc and bracket, got #{code[1].inspect} instead"
-      ) unless code[1] == '['
-
-      colors = ThemeColors.new
-      pack = ""
-      fg_rgb_flag = false
-      bg_rgb_flag = false
-      fg_256_flag = false
-      bg_256_flag = false
-      fg = false
-      bg = false
-      fg_rgb = Array(Int32).new
-      bg_rgb = Array(Int32).new
-      last = 0
-
-      code.each_char_with_index do |chr, i|
-        last = i
-        next if i < 2
-
-        if chr.ascii_number?
-          pack += chr
-        elsif chr == ';'
-          num = pack.to_i
-
-          if false # I wonder if this gets optimized out...
-
-          # switches for 256 and true color
-          elsif num == 38 # fg extended
-            fg = true
-          elsif num == 48 # bg extended
-            bg = true
-          elsif num == 5 && fg # fg 256 color
-            fg_256_flag = true
-            fg = false
-          elsif num == 5 && bg # bg 256 color
-            bg_256_flag = true
-            bg = false
-          elsif num == 2 && fg # fg true color
-            fg_rgb_flag = true
-            fg = false
-          elsif num == 2 && bg # bg true color
-            bg_rgb_flag = true
-            bg = false
-
-          # 256 and true color codes
-          elsif fg_256_flag # store fg 256 color
-            colors.fg = num
-            fg_256_flag = false
-          elsif bg_256_flag # store bg 256 color
-            colors.bg = num
-            bg_256_flag = false
-          elsif fg_rgb_flag # store fg true color
-            fg_rgb << num
-          elsif bg_rgb_flag # store bg true color
-            bg_rgb << num
-
-          # 16 color codes
-          elsif num < 38 && num > 29 # it's a fg color
-            colors.fg = COLORS[num - 30]
-          elsif num < 48 && num > 39 # it's a bg color
-            colors.bg = COLORS[num - 40]
-
-          # styles, we have to do these last!
-          # there are technically other styles,
-          # but we only care about the first 10
-          elsif num <= 10 # it's a style! hopefully
-            colors.style = STYLES[num]
-
-          # if all else fails... PANIC!
-          else
-            raise "what is this i dont even PACK=#{pack.inspect}"
-          end
-
-          pack = "" # reset the string for the next go-round
-        elsif chr == 'm'
-          break # end of sequence, probably
-        else
-          raise ArgumentError.new(
-            "unrecognized character, expected digit, semicolon, or 'm' but got #{chr.inspect} instead"
-          )
-        end
-
-        if fg_rgb.size > 3
-          raise "too many fg args"
-        elsif bg_rgb.size > 3
-          raise "too many bg args"
-        end
-      end
-
-      if fg_rgb_flag
-        fg = "#"
-        fg_rgb.each do |n|
-          fg += n.to_s(16).rjust(2,'0')
-        end
-        colors.fg = fg
-      end
-
-      if bg_rgb_flag
-        bg = "#"
-        bg_rgb.each do |n|
-          bg += n.to_s(16).rjust(2,'0')
-        end
-        colors.bg = bg
-      end
-
-      raise(
-        "more data at the end of the escape sequence " \
-        "LAST=#{last} TOTAL=#{code.size} " \
-        "DATA=#{code[last, code.size - 1].inspect}"
-      ) if (last + 1) < code.size # maybe it wasn't the end of the sequence??
-
-      colors
+    def codes
+      @codes ||= codes_for(color_depth: 16_000_000)
     end
 
-    def to_s(io)
-      io.print @codes
+    def codes_for(color_depth : Int32)
+      new_codes = Array(String).new
+
+      if style && color_depth > 256
+        new_codes << "#{s style}" unless style == "none"
+      elsif style256 && color_depth > 16
+        new_codes << "#{s style256}" unless style256 == "none"
+      elsif style16 && color_depth > 0
+        new_codes << "#{s style16}" unless style16 == "none"
+      end
+
+      if fg && color_depth > 256
+        new_codes << "38;2;#{ct fg}" unless fg == "none"
+      elsif fg256 && color_depth > 16
+        new_codes << "38;5;#{fg256}" unless fg256 == "none"
+      elsif fg16 && color_depth > 0
+        new_codes << "3#{c16 fg16}" unless fg16 == "none"
+      end
+
+      if bg && color_depth > 256
+        new_codes << "48;2;#{ct bg}" unless bg == "none"
+      elsif bg256 && color_depth > 16
+        new_codes << "48;5;#{bg256}" unless bg256 == "none"
+      elsif bg16 && color_depth > 0
+        new_codes << "4#{c16 bg16}" unless bg16 == "none"
+      end
+
+      # this should just be ";" but some terminals can't handle true color fg and bg in a single go
+      new_codes_string = new_codes.join("m\e[")
+      new_codes_string.empty? ? "" : "\e[" + new_codes_string + "m"
     end
 
-    def c(name : Symbol)
-      COLORS.index name || raise "color not found: #{name.inspect}"
-    end
-
-    def s(name : Symbol)
+    def s(name : StrNil)
       STYLES.index name || raise "style not found: #{name.inspect}"
+    end
+
+    def c16(name : StrNil)
+      COLORS.index name || raise "color16 not found: #{name.inspect}"
+    end
+
+    def ct(indicator : StrNil)
+      indicator ? hex indicator : raise "hex color indicator not valid: #{indicator}"
     end
 
     def hex(hexcode : String)
@@ -182,50 +101,64 @@ module Themer
       "#{r};#{g};#{b}"
     end
 
+    def empty?(color_depth = 16_000_000)
+      codes_for(color_depth).empty?
+    end
+
+    def to_s(io)
+      io << codes
+    end
+
+    def to_hash
+      {
+        style:    style,    fg:    fg,    bg: bg,
+        style256: style256, fg256: fg256, bg256: bg256,
+        style16:  style16,  fg16:  fg16,  bg16: bg16
+      }.to_h.delete_if { |_,v| !v || v.empty? }
+    end
+
     def to_yaml(*args)
-      codes.to_yaml *args
+      to_hash.to_yaml *args
     end
 
-    COLORS = %i[black red green yellow blue magenta cyan white extended default]
-    STYLES = %i[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
-
-    class ThemeColors
-      property bg : COLOR
-      property fg : COLOR
-      property style : STYLE
-    end
+    COLORS = %w[black red green yellow blue magenta cyan white extended default]
+    STYLES = %w[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
   end
 
   class Builder
     property theme = Theme.new
 
-    def for(id : String, bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      colors = Colors.new.set bg: bg, fg: fg, style: style
-      @theme[id] = colors
+    def for(id : String, **args)
+      color = Color.new.set **args
+      @theme[id] = color
       @theme
     end
 
-    def default(bg : COLOR = nil, fg : COLOR = nil, style : STYLE = nil)
-      @theme.default = Colors.new.set bg: bg, fg: fg, style: style
+    def default(**args)
+      @theme.default = Color.new.set(**args)
     end
   end
 
   class Theme
-    property store = Hash(String, Colors).new
-    property reset : Colors = Colors.new.set style: :normal
-    property default : Colors | Nil
+    property colormap = Hash(String, Color).new
+    property reset : Color = Color.new.set style: "normal"
+    property default : Color | Nil
 
     def self.load(filename)
-      yaml = File.open filename do |file|
-        YAML.parse(file)
+      yaml = Hash(String, Hash(String, StrNil | StrNil | StrNil)).new
+
+      File.open filename do |file|
+        yaml = YAML.parse(file)
       end
 
       per_def = nil
-      data = Hash(String, Colors).new
-      yaml.as_h.each do |k,v|
-        colors = Colors.new.tap do |c|
-          tc = c.parse v.to_s
-          c.set bg: tc.bg, fg: tc.fg, style: tc.style
+      data = Hash(String, Color).new
+      yaml.each do |k,v|
+        colors = Color.new.tap do |c|
+          c.set \
+            style:    v["style"]?.to_s,    fg:    v["fg"]?.to_s,    bg:    v["bg"]?.to_s,
+            style16:  v["style16"]?.to_s,  fg16:  v["fg16"]?.to_s,  bg16:  v["bg16"]?.to_s,
+            style256: v["style256"]?.to_s, fg256: v["fg256"]?.to_s, bg256: v["bg256"]?.to_s
         end
 
         if k.to_s == "DEFAULT"
@@ -237,65 +170,59 @@ module Themer
 
       self.new.tap do |t|
         t.default = per_def if per_def
-        t.store = data
+        t.colormap = data
       end
     end
 
     def save(filename)
       per_def = @default
-      per = store.dup
+      per = colormap.dup
       per["DEFAULT"] = per_def if per_def
       File.open filename, mode: "w" do |file|
         file.puts YAML.dump per
       end
     end
 
-    def for(id : String) : Colors | NoReturn
-      default = @default  # so the ivar doesn't change during execution
-      if default.nil?
-        store[id] || raise ArgumentError.new("id not found #{id.inspect}")
-      else
-        store.fetch id, default
-      end
-
-      default = @default
-      color = store.fetch id, false
-
-      if found
-        found
-      elsif default
-        default
-      else
-        raise ArgumentError.new "#{self.class}#get color id not found #{id.inspect}"
-      end
+    def for(id : String) : Color
+      colormap[id]? || raise ArgumentError.new "#{self.class}#for(String) color id not found #{id.inspect}"
     end
 
-    def for(ids : Array(String)) : Colors | Nil
-      default = @default
+    def for(ids : Array(String)) : Color
       found = nil
       ids.find do |id|
-        found = store.fetch id, nil
-      end
-
-      if found
+        found = colormap.fetch id, nil
+        found = Color.new if id == "none"
         found
-      elsif default
-        default
-      else
-        raise ArgumentError.new("#{self.class}#get_any no match found for color ids #{ids.inspect}")
+      end
+
+      found || @default || raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")
+    end
+
+    # the start of a new category of methods which will handle more use cases I've discovered
+    # #all(ids)    -> returns all matching colors from the input list
+    # #first(ids)  -> returns the first non-empty color from the input list or raises an error
+    # #first?(ids) -> returns the first non-empty color from the input list or nil
+    # #sum(ids)    -> returns a Color generated by combining all colors from the list, first takes precedence
+    def all(ids : Array(String)) : Array(Color)
+      ids.each_with_object(Array(Color).new) do |id, acc|
+        if color = colormap.fetch id, nil
+          acc << color
+        elsif id == "none"
+          acc << Color.new
+        end
       end
     end
 
-    def [](id : String) : Colors
-      store[id]
+    def [](id : String) : Color
+      colormap[id]
     end
 
-    def []=(id : String, colors : Colors)
-      store[id] = colors || raise ArgumentError.new("key cannot be nil")
+    def []=(id : String, color : Color)
+      colormap[id] = color || raise ArgumentError.new("key cannot be nil")
     end
   end
 
   def self.reset
-    Colors.new.set style: :normal
+    Color.new.set style: "normal"
   end
 end

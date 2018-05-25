@@ -4,15 +4,15 @@ require "../../src/support/themer"
 describe Themer do
   it "does all the things" do
     theme = Themer.build do
-      default style: :italic
+      default style: "italic"
       # style only
-      for "reset", style: :normal
+      for "reset", style: "normal"
       # 16 colors
-      for "err", bg: :red, style: :bold, fg: :white
+      for "err", bg16: "red", style: "bold", fg16: "white"
       # 256 color
-      for "thehellofit", bg: 33
+      for "thehellofit", bg256: "33"
       # true color
-      for "lookatme", fg: "#de1e7e", style: :bold
+      for "lookatme", fg: "#de1e7e", style: "bold"
       for "foo", fg: "#BADA55"
       for "bar", fg: "#e1e100"
       for "baz", fg: "#c0ffee"
@@ -22,16 +22,17 @@ describe Themer do
     # @default is allowed to be nil
     default = theme.default
     if default
-      default.codes.should eq "\e[3;m"
+      default.codes.should eq "\e[3m"
     else
       fail "theme.default was nil"
     end
 
     theme.reset.codes.should eq theme["reset"].codes
 
-    theme["err"].codes.should eq "\e[1;41;37;m"
-    theme["thehellofit"].codes.should eq "\e[48;5;33;m"
-    theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126;m"
+    theme.for("err").codes.should eq "\e[1;37;41m"
+    theme["thehellofit"].codes.should eq "\e[48;5;33m"
+    theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"
+    theme.for(%w{bar qux}).codes.should eq "\e[38;2;225;225;0m"
 
     # test saving and loading
     theme_file = "./tmp/my_testing_theme.theme"
@@ -39,6 +40,6 @@ describe Themer do
     theme.save theme_file
     loaded_theme = Themer::Theme.load theme_file
 
-    loaded_theme.store.map{|_,v| v.codes}.should eq theme.store.map{|_,v| v.codes}
+    loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
   end
 end

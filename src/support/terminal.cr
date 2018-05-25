@@ -16,12 +16,14 @@ class Terminal
     STDERR = 2
   end
 
-  enum TIOCGWINSZ
-    Default = 0x40087468
-    Wrong = 0x0 # this will always cause ioctl to return -1
-  end
+  {% if flag?(:linux) %}
+    TIOCGWINSZ = 0x5413
+  {% elsif flag?(:darwin) %}
+    TIOCGWINSZ = 0x40087468
+  {% else %} # will cause ioctl to always return -1
+    TIOCGWINSZ = 0x00
+  {% end %}
 
-  property tiocgwinsz : TIOCGWINSZ = get_tiocgwinsz
   property fd : FD = FD::STDOUT
 
   def initialize(fd = FD::STDOUT)
@@ -35,12 +37,12 @@ class Terminal
   def size
     dimensions = C::Dimensions.new
     # ioctl(fd : FD, tiocgwinsz : TIOCGWINSZ, dimensions : Pointer(Dimensions))
-    result = C.ioctl fd, tiocgwinsz, pointerof(dimensions)
+    result = C.ioctl fd, TIOCGWINSZ, pointerof(dimensions)
 
     if result == 0
       [dimensions.rows, dimensions.cols]
     else
-      err = Errno.new "ioctl failed to get window size (TIOCGWINSZ=#{tiocgwinsz}"
+      err = Errno.new "ioctl failed to get window size (TIOCGWINSZ=#{TIOCGWINSZ}"
       if err.errno == Errno::ENOTTY
         # NOTE: this just means we've gotten something that isn't a TTY,
         # so we shouldn't truncate the output,
@@ -53,11 +55,5 @@ class Terminal
         raise err
       end
     end
-  end
-
-  def get_tiocgwinsz
-    # TODO: Make this dynamic for other OSes
-    # could also use ifdefs to set it at compile-time
-    TIOCGWINSZ::Default
   end
 end

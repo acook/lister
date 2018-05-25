@@ -9,42 +9,65 @@ module Lister
   class Options
 
     DEFAULT_THEME = Themer.build do
-      default style: :normal
-      for "broken", bg: :red
-      for "directory", style: :bold, fg: :black
-      for "source", fg: :white
-        for "shell", fg: :magenta
-          #for "bash", fg: :green
-          #for "zsh", fg: :blue
-        for "script", fg: :white
-          for "perl", style: :bold, fg: :yellow
-          for "ruby", fg: :red
-      for "program", fg: :blue
-        # x86
-        # arm
-      for "unix", fg: :yellow
+      default style: "normal"
+
+      for "sigil", style16: "bold", fg16: "white", fg: "#FFFFFF"
+
+      for "broken",
+        style: "crossed_out" , fg: "#FFFFFF", bg: "#FF0000",
+        style16: "crossed_out", fg16: "white", bg16: "red"
+
+      for "directory",
+        style:    "none", fg: "#999999",
+        style256: "none", fg256: "244",
+        style16:  "bold", fg16: "black"
+
+      for "document", style16: "italic"
+      for "text", style16: "italic"
+
+      for "source", fg16: "white"
+        for "shell", fg: "#344D3F", fg16: "green"
+          #for "bash", fg: "#344D3F"
+          #for "zsh", fg16: "blue"
+        for "script", fg16: "white"
+          for "perl", style: "bold", fg16: "yellow"
+          for "ruby", fg16: "red", fg: "#CC0000"
+      for "program", fg16: "blue"
+        for "x86_32", fg: "#0071c5"
+        for "x86_64", fg: "#009A66"
+        for "arm_32", fg: "#0091BD"
+        for "arm_64", fg: "#333E48"
+      for "special", fg16: "yellow"
         # link
         # socket
-      for "image", style: :bold, fg: :magenta
+      for "image", style: "bold", fg16: "magenta"
         # gif
         # jpeg
-      for "compressed", style: :bold
-        for "doom", style: :bold, fg: :green
+      for "compressed", style16: "bold"
+        #for "zip", fg: "#11699b"
+        for "wad", style: "bold", fg: "#2A5225", style16: "bold", fg16: "green"
     end
 
+    property show_hidden : Bool = false
+    property show_type_names : Bool = false
+    property show_mime_types : Bool = false
     property recurse : Int8 = 1_i8
+
     property magic : Magic::Magic
+    property magic_mime : Magic::Magic
     property terminal = Terminal.new
+
+    property palette : Int32 = Int32::MAX
     property theme : Themer::Theme = DEFAULT_THEME
+    property full_line : Bool = false
 
     def initialize
       # the default flags set it to only return MIME types,
       #   which is an extremely limited subset of possible types
       #   the below line could be used instead, but
       #   the current flags also search compressed files
-      #flags = Magic::LibMagic::Flags::NONE.to_i
-      flags = Magic::LibMagic::Flags::COMPRESS.to_i
-      @magic = Magic::Magic.new flags: flags
+      @magic = Magic::Magic.new flags: Magic::LibMagic::Flags::COMPRESS.to_i
+      @magic_mime = Magic::Magic.new flags: Magic::LibMagic::Flags::MIME.to_i
     end
 
     def recurse?
