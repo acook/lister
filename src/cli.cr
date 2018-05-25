@@ -98,7 +98,7 @@ module Lister
     end
 
     def usage
-      this = Pathname.new(PROGRAM_NAME).basename.to_s
+      this = Pathname.new(PROGRAM_NAME).basename
 
       puts "usage: #{this} [-A] [-R] [--recurse DEPTH] [<paths>]"
       puts "\tshows colorized and structured libmagic types"

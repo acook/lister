@@ -25,7 +25,7 @@ module Lister
       if path.exists? || path.symlink?
         raw_type = options.magic.file path.to_s
         # remove the full path prefix from libmagic's result
-        @type = raw_type.sub(/^#{path.to_s}:\s+/, "").strip
+        @type = raw_type.sub(/^#{path}:\s+/, "").strip
         @mime = options.magic_mime.file path.to_s
       else
         # this will happen if the user specifies a nonexistent file

@@ -83,4 +83,8 @@ class Pathname
   def to_s
     path
   end
+
+  def to_s(io)
+    io << path
+  end
 end
