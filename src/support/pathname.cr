@@ -9,20 +9,17 @@ class Pathname
   end
 
   property path : String
+  property stat : File::Stat | Nil
 
-  def initialize(new_path)
-    case new_path
-    when Pathname
-      @path = new_path.path
-    when String
-      @path = new_path
-    else
-      raise "invalid path supplied"
-    end
+  def initialize(new_path : String | Pathname, no_stat = false)
+    @path = new_path.to_s
+    @stat = nil
+
+    restat unless no_stat
   end
 
   def basename
-    self.class.new File.basename path
+    self.class.new File.basename(path), no_stat: true
   end
 
   def directory?
@@ -72,8 +69,29 @@ class Pathname
     File.executable? path
   end
 
+  def restat
+    begin
+      @stat = File.lstat File.expand_path path
+    rescue ex # don't freak out if the path doesn't exist
+      raise ex unless ex.is_a?(Errno) && ex.errno == Errno::ENOENT
+    end
+    !!@stat
+  end
+
   def pipe?
-    File::Stat.new(path.to_s).pipe?
+    (s = stat) && s.pipe?
+  end
+
+  def socket?
+    (s = stat) && s.socket?
+  end
+
+  def blockdev?
+    (s = stat) && s.blockdev?
+  end
+
+  def chardev?
+    (s = stat) && s.chardev?
   end
 
   def <=>(other)
