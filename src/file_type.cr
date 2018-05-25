@@ -93,7 +93,18 @@ module FT
     type :document
       type :pdf, :document, /PDF/
 
+    type :data
+      type :xml, :data, /XML/
+
+    type :program, nil, /program|executable/
+      type :win32,  :program, /MS Windows/
+      type :x86_32, :program, /executable.*(x86|i386|Intel 80386)/
+      type :x86_64, :program, /executable.*(x86-64)/
+      type :arm_32, :program, /(32-bit).*executable.*(ARM)/
+      type :arm_64, :program, /(64-bit).*executable.*(ARM)/
+
     type :source
+      type :c,     :source, /c source/
       type :shell, :source, /shell|SHELL/
         type :bash, :shell, /bash|Bourne/
         type :zsh, :shell, /zsh/
@@ -101,19 +112,23 @@ module FT
         type :perl, :script, /perl|Perl/
         type :ruby, :script, /ruby|Ruby/
         type :python, :script, /python/
-
-    type :program, nil, /program|executable/
-      type :x86_32, :program, /(32-bit).*executable.*(x86|i386|Intel 80386)/
-      type :x86_64, :program, /(64-bit).*executable.*(x86-64)/
-      type :arm_32, :program, /(32-bit).*executable.*(ARM)/
-      type :arm_64, :program, /(64-bit).*executable.*(ARM)/
+        type :makefile, :script, /makefile/
 
     type :compressed, nil, /archive/
-    type :wad, :compressed, /doom|PWAD/
-    type :zip, :compressed, /Zip/
+      type :wad, :compressed, /doom|PWAD/
+      type :zip, :compressed, /Zip/
+
+    type :library
+      type :dll,    :library, /DLL/
+      type :msvc,   :library, /MSVC/
+      type :so,     :library, /shared object/
+      type :ar,     :library, /ar archive/
+      type :object, :library, /relocatable/
 
     type :resource
       type :font, :resource, /font/
+        type :otf, :font, /OpenType font/
+        type :ttf, :font, /TrueType font/
 
     type :special
       type :link, :special, /symbolic link|socket/
@@ -124,8 +139,9 @@ module FT
       type :blockdev, :special, /block special/
 
     type :image
-    type :gif, :image, /GIF/
-    type :jpg, :image
+      type :gif, :image, /GIF/
+      type :jpg, :image, /JPEG/
+      type :png, :image, /PNG/
 
     type :broken, nil, /broken|NOT FOUND|cannot open/
   end
