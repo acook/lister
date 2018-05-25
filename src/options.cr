@@ -37,7 +37,7 @@ module Lister
         for "x86_64", fg: "#009A66"
         for "arm_32", fg: "#0091BD"
         for "arm_64", fg: "#333E48"
-      for "unix", fg16: "yellow"
+      for "special", fg16: "yellow"
         # link
         # socket
       for "image", style: "bold", fg16: "magenta"

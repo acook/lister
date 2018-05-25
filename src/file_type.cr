@@ -112,9 +112,16 @@ module FT
     type :wad, :compressed, /doom|PWAD/
     type :zip, :compressed, /Zip/
 
-    type :unix
-      type :link, :unix, /^(?!broken).*symbolic link|socket/
-      type :named_pipe, :unix, /^fifo \(named pipe\)/
+    type :resource
+      type :font, :resource, /font/
+
+    type :special
+      type :link, :special, /symbolic link|socket/
+      type :named_pipe, :special, /^fifo \(named pipe\)/
+      type :socket, :special
+      type :sticky, :special, /sticky/
+      type :chardev, :special, /character special/
+      type :blockdev, :special, /block special/
 
     type :image
     type :gif, :image, /GIF/
