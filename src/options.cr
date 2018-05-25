@@ -11,7 +11,7 @@ module Lister
     DEFAULT_THEME = Themer.build do
       default style: "normal"
 
-      for "sigil", style16: "bold", fg16: "white", fg: "#FF0000"
+      for "sigil", style16: "bold", fg16: "white", fg: "#FFFFFF"
 
       for "broken",
         style: "crossed_out" , fg: "#FFFFFF", bg: "#FF0000",
