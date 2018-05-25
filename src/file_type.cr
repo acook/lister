@@ -98,7 +98,7 @@ module FT
 
     type :program, nil, /program|executable/
       type :win32,  :program, /MS Windows/
-      type :x86_32, :program, /executable.*(x86|i386|Intel 80386)/
+      type :x86_32, :program, /executable.*(i386|Intel 80386)/
       type :x86_64, :program, /executable.*(x86-64)/
       type :arm_32, :program, /(32-bit).*executable.*(ARM)/
       type :arm_64, :program, /(64-bit).*executable.*(ARM)/
