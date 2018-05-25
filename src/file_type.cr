@@ -84,9 +84,6 @@ module FT
       type :*, :sigil #, /^\*$/
       type :"@", :sigil #, /^\@$/
 
-    type :broken, nil, /broken|NOT FOUND|cannot open/
-      type :broken_symlink, :broken, /broken symbolic link/
-
     type :directory, nil, /directory/
 
     type :text
@@ -122,6 +119,8 @@ module FT
     type :image
     type :gif, :image, /GIF/
     type :jpg, :image
+
+    type :broken, nil, /broken|NOT FOUND|cannot open/
   end
 
 end
