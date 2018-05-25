@@ -33,7 +33,6 @@ module Lister
 
     def line(entry, longest, indent)
       info = String.new
-      info += indentation(indent)
 
       info += entry.name
       pre_sigil = info.size
@@ -45,7 +44,7 @@ module Lister
 
       info += type_info entry
 
-      if info.size > console_width
+      if info.size + (indent * 2) > console_width
         info = info[0,(console_width-1)] + "…"
       end
 
@@ -53,7 +52,7 @@ module Lister
       info = info.insert post_sigil, color(entry)
       info = info.insert pre_sigil, attr_color(entry)
 
-      print color(entry), info, options.theme.reset, "\n"
+      print indentation(indent), color(entry), info, options.theme.reset, "\n"
     end
 
     def just(len, fit, fill = " ")
