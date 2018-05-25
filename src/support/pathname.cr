@@ -42,7 +42,7 @@ class Pathname
     Dir.open(path) do |dir|
       dir.each do |entry|
         next if symlink? || skip.any? {|pattern| pattern =~ entry }
-        children << self.class.new self.join entry
+        children << self.class.new File.expand_path(entry, self.expand_path.to_s)
       end
     end
     children
