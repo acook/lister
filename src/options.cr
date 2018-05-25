@@ -59,6 +59,7 @@ module Lister
 
     property palette : Int32 = Int32::MAX
     property theme : Themer::Theme = DEFAULT_THEME
+    property full_line : Bool = false
 
     def initialize
       # the default flags set it to only return MIME types,

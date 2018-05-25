@@ -52,6 +52,7 @@ module Lister
       info = info.insert post_sigil, color(entry)
       info = info.insert pre_sigil, attr_color(entry)
 
+      print color(entry), "\e[K" if options.full_line
       print indentation(indent), color(entry), info, options.theme.reset, "\n"
     end
 
