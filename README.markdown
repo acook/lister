@@ -16,7 +16,11 @@ Lister supports 16 million colors in it's output. Seriously. And most modern ter
 
 ### It's configurable!
 
-You can make your own themes!<sup>[\*](#wip)</sup> And a whole lot more [is planned](https://github.com/acook/lister/blob/master/TODO.markdown).
+You can make your own themes!
+
+### But wait, there's more!<sup>[\*](#wip)</sup>
+
+A whole lot more [is planned](https://github.com/acook/lister/blob/master/TODO.markdown).
 
 Installation
 ============
@@ -38,7 +42,7 @@ Run the build script:
 - `./lister/scripts/build`
 
 Put the resulting binary somewhere in your path:
-- `mv lister/bin/lister ~/xbin`
+- `mv lister/bin/lister ~/bin/`
 
 You can even make an alias for it in your shell rc file:
 - `alias l=lister`
