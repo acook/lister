@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-cd_safe() {
-  cd "$1" || echo "unable to cd to: $1" && exit 1
-}
+command_exists() { command -v "$1" > /dev/null 2>&1; }
 
-is_cmd() {
-  command -v "$1" > /dev/null
-}
-
-if ! is_cmd git; then
+if ! command_exists git; then
   echo "git not found in PATH: $PATH"
   exit 2
 fi
@@ -21,7 +15,7 @@ mkdir "$lib_path"
 git clone "$libmagic_repo" "$lib_path/libmagic-crystal"
 
 echo "installing libmagic and crystal..."
-if is_cmd brew; then
+if command_exists brew; then
   brew install crystal-lang libmagic
 else
   echo "enter password to install with apt or ctrl-c to do it yourself..."
