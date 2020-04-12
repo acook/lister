@@ -1,6 +1,6 @@
 require "libmagic-crystal/magic"
 require "./support/terminal"
-require "./support/themer"
+require "./support/themer/themer"
 
 module Lister
   # the Options object is essentially an environment which gets passed around
