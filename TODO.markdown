@@ -13,17 +13,17 @@ Planned
 ### Themer
 
 - (DONE) Allow themes to have fallback colors for different color depths
-- Specify theme on commandline
+- (DONE) Specify theme on commandline
 - Specify theme in config file
-- Sepcify color depth on commandline
-- Sepcify color depth in config file
+- (DONE) Sepcify color depth on commandline
+- Specify color depth in config file
 - Attempt to autodetect color depth if not specified
 - true color palette names
 - Integrate XKCD's rgb.txt
 
 ### Visual
 
-- flag executable files somehow
+- (DONE) flag executable files somehow
 - Tree-like line-drawing characters option for indentation
 
 ### Output Options
