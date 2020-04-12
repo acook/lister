@@ -148,7 +148,7 @@ module Themer
       yaml = Hash(String, Hash(String, StrNil | StrNil | StrNil)).new
 
       File.open filename do |file|
-        yaml = YAML.parse(file)
+        yaml = YAML.parse(file).as_h
       end
 
       per_def = nil
