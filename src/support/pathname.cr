@@ -72,8 +72,8 @@ class Pathname
   def restat
     begin
       @stat = File.info File.expand_path path
-    rescue ex # don't freak out if the path doesn't exist
-      raise ex unless ex.is_a?(Errno) && ex.errno == Errno::ENOENT
+    rescue ex : File::NotFoundError # don't freak out if the path doesn't exist
+      puts "file not found : #{File.expand_path path}"
     end
     !!@stat
   end

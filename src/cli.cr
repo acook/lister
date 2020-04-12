@@ -98,18 +98,18 @@ module Lister
     end
 
     def usage
-      this = Pathname.new(PROGRAM_NAME).basename
+      this = Pathname.new(PROGRAM_NAME, no_stat: true).basename
 
       puts "usage: #{this} [-A] [-R] [--recurse DEPTH] [<paths>]"
       puts "\tshows colorized and structured libmagic types"
       puts
       puts "\t--\t\tstop processing commandline options"
-      puts "\t\t\tinterpret remaining arguments as paths"
+      puts "\t\t\tand interpret remaining arguments as paths"
       puts "\t-A\t\tshow hidden files (excluding . and ..)"
       puts "\t--colors FILE\tuse specified YAML file as color theme"
       puts "\t--color-depth DEPTH\tuse the 16, 256, or true color palette"
-      puts "\t--color-line\tfill in the whole line of an entry"
-      puts "\t\t\tusually only the filename and type info is affected"
+      #puts "\t--color-line\tfill in the whole line of an entry"
+      #puts "\t\t\tusually only the filename and type info is affected"
       puts "\t-h\t\tdisplay usage information (you're looking at it!)"
       puts "\t-K\t\tshow type names as seen by Lister"
       puts "\t-Km\t\tshow MIME types from libMagic"
