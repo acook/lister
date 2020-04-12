@@ -66,9 +66,7 @@ module Lister
         if children_count > 0
           @longest = raw_children.map{|c| c.basename.to_s.size }.max.to_i16
         end
-      rescue err : Errno
-        raise err unless err.errno == Errno::EACCES
-
+      rescue err : File::AccessDeniedError
         # if we get here it's because we don't have the permissions
         #   to access this directory, set this so we can use it later
         @children_count = -1

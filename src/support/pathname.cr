@@ -9,7 +9,7 @@ class Pathname
   end
 
   property path : String
-  property stat : File::Stat | Nil
+  property stat : File::Info | Nil
 
   def initialize(new_path : String | Pathname, no_stat = false)
     @path = new_path.to_s
@@ -71,7 +71,7 @@ class Pathname
 
   def restat
     begin
-      @stat = File.lstat File.expand_path path
+      @stat = File.info File.expand_path path
     rescue ex # don't freak out if the path doesn't exist
       raise ex unless ex.is_a?(Errno) && ex.errno == Errno::ENOENT
     end
@@ -79,19 +79,19 @@ class Pathname
   end
 
   def pipe?
-    (s = stat) && s.pipe?
+    (s = stat) && s.type.pipe?
   end
 
   def socket?
-    (s = stat) && s.socket?
+    (s = stat) && s.type.socket?
   end
 
   def blockdev?
-    (s = stat) && s.blockdev?
+    (s = stat) && s.type.blockdev?
   end
 
   def chardev?
-    (s = stat) && s.chardev?
+    (s = stat) && s.type.chardev?
   end
 
   def <=>(other)

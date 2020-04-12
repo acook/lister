@@ -42,8 +42,8 @@ class Terminal
     if result == 0
       [dimensions.rows, dimensions.cols]
     else
-      err = Errno.new "ioctl failed to get window size (TIOCGWINSZ=#{TIOCGWINSZ}"
-      if err.errno == Errno::ENOTTY
+      err = Errno.value
+      if err.enotty?
         # NOTE: this just means we've gotten something that isn't a TTY,
         # so we shouldn't truncate the output,
         # we still do for very long lines, so we can fit in a UInt16
@@ -52,7 +52,8 @@ class Terminal
       else
         # NOTE: if we're hitting this error,
         # then the TIOCGWINSZ is probably fubar for this platform
-        raise err
+        msg = "ioctl failed to get window size (TIOCGWINSZ=#{TIOCGWINSZ}"
+        raise IO::Error.from_errno(msg, err)
       end
     end
   end
