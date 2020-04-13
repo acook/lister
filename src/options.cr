@@ -1,6 +1,7 @@
 require "magic/magic"
 require "./support/terminal"
 require "./support/themer/themer"
+require "./magic_engine"
 
 module Lister
   # the Options object is essentially an environment which gets passed around
@@ -61,17 +62,16 @@ module Lister
     property show_mime_types : Bool = false
     property recurse : Int8 = 1_i8
 
-    property magic : Magic::TypeChecker
-    property magic_mime : Magic::TypeChecker
     property terminal = Terminal.new
+    property engine : MagicEngine
 
     property palette : Int32 = Int32::MAX
     property theme : Themer::Theme = DEFAULT_THEME
     property full_line : Bool = false
 
     def initialize
-      (@magic = Magic::TypeChecker.new).look_into_compressed_files.return_error_as_text
-      (@magic_mime = Magic::TypeChecker.new).get_mime_type.return_error_as_text
+      @engine = MagicEngine.new
+      engine.options = self
     end
 
     def recurse?

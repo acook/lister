@@ -1,4 +1,4 @@
-require "./support/pathname"
+require "path"
 require "./formatter"
 require "./entry"
 require "./options"
@@ -7,6 +7,11 @@ module Lister
   class CLI
     property options = Options.new
     property paths = Array(String).new
+    property ef : EntryFactory
+
+    def initialize
+      @ef = EntryFactory.new(options.engine)
+    end
 
     # this is the method which starts the ball rolling
     # but if #set_options hasn't been run it will implode
@@ -96,11 +101,7 @@ module Lister
     end
 
     def wrap(path)
-      if File.directory? path
-        Directory.new path, options
-      else
-        Entry.new path, options
-      end
+      ef.build path
     end
 
     def load_theme(path)
@@ -112,7 +113,7 @@ module Lister
     end
 
     def usage
-      this = Pathname.new(PROGRAM_NAME, no_stat: true).basename
+      this = Path.new(PROGRAM_NAME).basename
 
       puts "#{this} #{Lister::VERSION}"
       puts "Anthony M. Cook <github@anthonymcook.com>"

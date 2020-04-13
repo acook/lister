@@ -21,7 +21,7 @@ module Lister
     end
 
     def render_recurse(entry, recurse_depth, parent_longest, indent = 0)
-      unless entry.children_count > 0
+      unless entry.children.size > 0
         line entry, parent_longest, indent
       else
         line entry, parent_longest, indent
@@ -67,17 +67,19 @@ module Lister
     end
 
     def attr(entry) : String
-      case
-      when entry.path.symlink?
+      case entry
+      when Entry::Symlink
         "@"
-      when entry.path.pipe?
+      when Entry::Pipe
         "|"
-      when entry.path.directory?
+      when Entry::Directory
         "/"
-      when entry.path.executable?
-        "*"
       else
-        ""
+        if entry.executable?
+          "*"
+        else
+          ""
+        end
       end
     end
 
