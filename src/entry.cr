@@ -16,9 +16,10 @@ module Lister
 
       case
       when type.nil? && File.symlink? uri
-          Entry::Symlink.new uri, info, self
+        info = ::File.info? uri, false
+        Entry::Symlink.new uri, info, self
       when type.nil? && !exists
-          Entry::NotFound.new uri, info, self
+        Entry::NotFound.new uri, info, self
       when type.nil?
         Entry::Unknown.new uri, info, self
       when type.symlink?
