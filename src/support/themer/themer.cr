@@ -5,8 +5,7 @@ require "./theme"
 module Themer
   def self.build
     td = Builder.new
-    new_theme = with td yield td
-    new_theme
+    with td yield td
   end
 
   alias StrNil = String | Nil
