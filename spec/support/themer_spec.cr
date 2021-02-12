@@ -7,7 +7,7 @@ describe Themer do
     # style only
     for "reset", style: "normal"
     # 16 colors
-    for "err", bg16: "red", style: "bold", fg16: "white"
+    for "err", bg16: "red", style16: "bold", fg16: "white"
     # 256 color
     for "thehellofit", bg256: "33"
     # true color
@@ -16,6 +16,8 @@ describe Themer do
     for "bar", fg: "#e1e100"
     for "baz", fg: "#c0ffee"
     for "qux", fg: "#1CE1CE"
+
+    for "hasnoneset", fg: "none", fg16: "red"
   end
 
   it "allows default to be nil" do
@@ -26,6 +28,14 @@ describe Themer do
     default = test_theme.default
     fail "test theme's default was nil when it shouldn't be!" if default.nil?
     test_theme.for("unknown").codes.should eq(default.codes)
+  end
+
+  it "falls back to lower color depth colors if higher ones aren't set" do
+    test_theme.for("err").codes_for(16_000_000).should eq(test_theme.for("err").codes_for(16))
+  end
+
+  it "does not fall back to lower depth colors if set to 'none'" do
+    test_theme.for("hasnoneset").codes_for(16_000_000).should eq("")
   end
 
 
