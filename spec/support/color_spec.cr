@@ -63,17 +63,17 @@ describe Themer::Color do
     end
 
     it "does split true-color sequences if both fg and bg are given" do
-      colortrue = klass.new.set fg: "#1CE1CE", bg: "#5E1F1E"
-      colortrue.codes.count('\e').should eq 2
+      colortrue = klass.new.set style: "italic", fg: "#1CE1CE", bg: "#5E1F1E"
+      colortrue.codes.count('\e').should eq 3
     end
 
     it "doesn't split true-color if only fg or bg are given" do
       # note that there is only one \e escape sequence here
       colortrue = klass.new.set style: "bold", fg: "#1CE1CE"
-      colortrue.codes.should eq "\e[1;38;2;28;225;206m"
+      colortrue.codes.count('\e').should eq 1
 
       colortrue = klass.new.set style: "bold", bg: "#5E1F1E"
-      colortrue.codes.should eq "\e[1;48;2;94;31;30m"
+      colortrue.codes.count('\e').should eq 1
     end
   end
 end
