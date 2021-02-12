@@ -1,5 +1,4 @@
-require "spec"
-require "../../src/support/themer"
+require "./spec_helper"
 
 describe Themer::Theme do
   klass = Themer::Theme
