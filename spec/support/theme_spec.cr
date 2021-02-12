@@ -107,7 +107,7 @@ describe Themer::Theme do
 
     it "can load themes that it has saved and they will be identical" do
       theme = klass.new
-      theme["foo"] = Themer::Color.new.set style: "none", fg16: "black", bg16: "white"
+      theme["foo"] = Themer::Color.new.set style: "skip", fg16: "black", bg16: "white"
       theme.save theme_file
       loaded_theme = klass.load theme_file
 
@@ -118,7 +118,7 @@ describe Themer::Theme do
 
     it "preserves default fallback color" do
       theme = klass.new
-      theme.default = Themer::Color.new.set style: "none", fg16: "black", bg16: "white"
+      theme.default = Themer::Color.new.set style: "skip", fg16: "black", bg16: "white"
       theme.save theme_file
       loaded_theme = klass.load theme_file
 

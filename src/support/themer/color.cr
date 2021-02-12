@@ -43,29 +43,29 @@ module Themer
       weight = 0 # for tracking if true-color fg and bgs are both provided
 
       if style && color_depth > 256
-        new_codes << "#{s style}" unless style == "none"
+        new_codes << "#{s style}" unless style == "skip"
       elsif style256 && color_depth > 16
-        new_codes << "#{s style256}" unless style256 == "none"
+        new_codes << "#{s style256}" unless style256 == "skip"
       elsif style16 && color_depth > 0
-        new_codes << "#{s style16}" unless style16 == "none"
+        new_codes << "#{s style16}" unless style16 == "skip"
       end
 
       if fg && color_depth > 256
         weight += 1
-        new_codes << "38;2;#{ct fg}" unless fg == "none"
+        new_codes << "38;2;#{ct fg}" unless fg == "skip"
       elsif fg256 && color_depth > 16
-        new_codes << "38;5;#{fg256}" unless fg256 == "none"
+        new_codes << "38;5;#{fg256}" unless fg256 == "skip"
       elsif fg16 && color_depth > 0
-        new_codes << "3#{c16 fg16}" unless fg16 == "none"
+        new_codes << "3#{c16 fg16}" unless fg16 == "skip"
       end
 
       if bg && color_depth > 256
         weight += 1
-        new_codes << "48;2;#{ct bg}" unless bg == "none"
+        new_codes << "48;2;#{ct bg}" unless bg == "skip"
       elsif bg256 && color_depth > 16
-        new_codes << "48;5;#{bg256}" unless bg256 == "none"
+        new_codes << "48;5;#{bg256}" unless bg256 == "skip"
       elsif bg16 && color_depth > 0
-        new_codes << "4#{c16 bg16}" unless bg16 == "none"
+        new_codes << "4#{c16 bg16}" unless bg16 == "skip"
       end
 
       # the sep should just be ";" but some terminals can't handle true color fg and bg in a single go

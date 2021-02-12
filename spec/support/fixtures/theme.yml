@@ -12,9 +12,9 @@ broken:
   fg16: white
   bg16: red
 directory:
-  style: none
+  style: skip
   fg: '#999999'
-  style256: none
+  style256: skip
   fg256: "244"
   style16: bold
   fg16: black

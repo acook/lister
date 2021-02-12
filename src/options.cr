@@ -19,8 +19,8 @@ module Lister
         style16: "crossed_out", fg16: "white", bg16: "red"
 
       for "directory",
-        style:    "none", fg: "#999999",
-        style256: "none", fg256: "244",
+        style:    "skip", fg: "#999999",
+        style256: "skip", fg256: "244",
         style16:  "bold", fg16: "black"
 
       for "document",

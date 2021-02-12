@@ -57,7 +57,7 @@ module Themer
       found = nil
       ids.find do |id|
         found = colormap.fetch id, nil
-        found = Color.new if id == "none"
+        found = Color.new if id == "skip"
         found
       end
 
@@ -73,7 +73,7 @@ module Themer
       ids.each_with_object(Array(Color).new) do |id, acc|
         if color = colormap.fetch id, nil
           acc << color
-        elsif id == "none"
+        elsif id == "skip"
           acc << Color.new
         end
       end

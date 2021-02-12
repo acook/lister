@@ -13,7 +13,7 @@ describe Themer::Color do
 
     it "can test for inequality" do
       color1 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
-      color2 = klass.new.set style16: "none", fg16: "white", bg16: "red"
+      color2 = klass.new.set style16: "skip", fg16: "white", bg16: "red"
 
       color1.should_not eq color2
     end
@@ -34,8 +34,8 @@ describe Themer::Color do
        color.codes_for(16_000_000).should eq "\e[3m\e[38;2;255;255;255m\e[48;2;255;0;0m"
     end
 
-    it "does not fall back to lower depth colors if set to 'none'" do
-      color = klass.new.set fg: "none", bg: "#BADA55", fg16: "red", bg16: "green"
+    it "does not fall back to lower depth colors if set to 'skip'" do
+      color = klass.new.set fg: "skip", bg: "#BADA55", fg16: "red", bg16: "green"
       color.codes_for(16_000_000).should_not eq color.codes_for(16)
       color.codes_for(16_000_000).should eq("\e[48;2;186;218;85m")
     end
