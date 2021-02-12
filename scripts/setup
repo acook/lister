@@ -7,12 +7,10 @@ if ! command_exists git; then
   exit 2
 fi
 
-libmagic_repo="https://github.com/pablotron/libmagic-crystal.git"
 this_path="$(git rev-parse --show-toplevel)"
 lib_path="$this_path/lib"
 
 mkdir "$lib_path"
-git clone "$libmagic_repo" "$lib_path/libmagic-crystal"
 
 echo "installing libmagic and crystal..."
 if command_exists brew; then
