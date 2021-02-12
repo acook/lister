@@ -94,6 +94,10 @@ module Themer
       "#{r};#{g};#{b}"
     end
 
+    def ==(other : self)
+      self.to_hash == other.to_hash
+    end
+
     def empty?(color_depth = 16_000_000)
       codes_for(color_depth).empty?
     end
