@@ -25,6 +25,5 @@ describe Themer do
     theme.for("err").codes.should eq "\e[1;37;41m"
     theme["thehellofit"].codes.should eq "\e[48;5;33m"
     theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"
-    theme.for(%w{bar qux}).codes.should eq "\e[38;2;225;225;0m"
   end
 end

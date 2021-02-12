@@ -31,6 +31,24 @@ describe Themer::Theme do
     theme.reset.codes.should eq "\e[0m"
   end
 
+  describe "#for with arrays" do
+    color1 = Themer::Color.new.set style: "italic"
+    color2 = Themer::Color.new.set style: "bold"
+
+    theme = klass.new.tap do |theme|
+      theme["bar"] = color1
+      theme["qux"] = color2
+    end
+
+    it "returns the first found of a given list of IDs" do
+      theme.for(%w{bar qux}).should eq color1
+    end
+
+    it "returns later ids if earlier ones not found" do
+      theme.for(%w{foo qux}).should eq color2
+    end
+  end
+
   describe "loading known theme" do
     fixture_theme_file = "#{__DIR__}/fixtures/theme.yml"
 
