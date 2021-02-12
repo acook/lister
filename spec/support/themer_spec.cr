@@ -2,22 +2,35 @@ require "spec"
 require "../../src/support/themer"
 
 describe Themer do
+  test_theme = Themer.build do
+    default style: "italic"
+    # style only
+    for "reset", style: "normal"
+    # 16 colors
+    for "err", bg16: "red", style: "bold", fg16: "white"
+    # 256 color
+    for "thehellofit", bg256: "33"
+    # true color
+    for "lookatme", fg: "#de1e7e", style: "bold"
+    for "foo", fg: "#BADA55"
+    for "bar", fg: "#e1e100"
+    for "baz", fg: "#c0ffee"
+    for "qux", fg: "#1CE1CE"
+  end
+
+  it "allows default to be nil" do
+    Themer::Theme.new.default.should be_nil
+  end
+
+  it "falls back to default if ID not found" do
+    default = test_theme.default
+    fail "test theme's default was nil when it shouldn't be!" if default.nil?
+    test_theme.for("unknown").codes.should eq(default.codes)
+  end
+
+
   it "does all the things" do
-    theme = Themer.build do
-      default style: "italic"
-      # style only
-      for "reset", style: "normal"
-      # 16 colors
-      for "err", bg16: "red", style: "bold", fg16: "white"
-      # 256 color
-      for "thehellofit", bg256: "33"
-      # true color
-      for "lookatme", fg: "#de1e7e", style: "bold"
-      for "foo", fg: "#BADA55"
-      for "bar", fg: "#e1e100"
-      for "baz", fg: "#c0ffee"
-      for "qux", fg: "#1CE1CE"
-    end
+    theme = test_theme
 
     # @default is allowed to be nil
     default = theme.default

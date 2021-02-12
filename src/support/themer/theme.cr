@@ -50,7 +50,7 @@ module Themer
     end
 
     def for(id : String) : Color
-      colormap[id]? || raise ArgumentError.new "#{self.class}#for(String) color id not found #{id.inspect}"
+      colormap[id]? || default || raise ArgumentError.new "#{self.class}#for(String) color id not found #{id.inspect}"
     end
 
     def for(ids : Array(String)) : Color
@@ -61,7 +61,7 @@ module Themer
         found
       end
 
-      found || @default || raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")
+      found || default || raise ArgumentError.new("#{self.class}#for(Array) no match found for color ids #{ids.inspect}")
     end
 
     # the start of a new category of methods which will handle more use cases I've discovered
