@@ -3,18 +3,20 @@ require "./spec_helper"
 describe Themer::Color do
   klass = Themer::Color
 
-  it "can test for equality" do
-    color1 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
-    color2 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
+  describe "#==" do
+    it "can test for equality" do
+      color1 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
+      color2 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
 
-    color1.should eq color2
-  end
+      color1.should eq color2
+    end
 
-  it "can test for inequality" do
-    color1 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
-    color2 = klass.new.set style16: "none", fg16: "white", bg16: "red"
+    it "can test for inequality" do
+      color1 = klass.new.set style16: "bold", fg16: "white", bg16: "red"
+      color2 = klass.new.set style16: "none", fg16: "white", bg16: "red"
 
-    color1.should_not eq color2
+      color1.should_not eq color2
+    end
   end
 
   describe "fallback mechanics" do
