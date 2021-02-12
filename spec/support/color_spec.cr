@@ -17,15 +17,26 @@ describe Themer::Color do
     color1.should_not eq color2
   end
 
-  it "falls back to lower color depth colors if higher ones aren't set" do
-    color = klass.new.set style16: "bold", fg16: "white", bg16: "red"
-    color.codes_for(16_000_000).should eq(color.codes_for(16))
-  end
+  describe "fallback mechanics" do
+    it "falls back to lower color depth colors if higher ones aren't set" do
+      color = klass.new.set style16: "bold", fg16: "white", bg16: "red"
 
-  it "does not fall back to lower depth colors if set to 'none'" do
-    color = klass.new.set fg: "none", bg: "#BADA55", fg16: "red", bg16: "green"
-    color.codes_for(16_000_000).should_not eq colors.codes_for(16)
-    color.codes_for(16_000_000).should eq("\e[48;2;186;218;85m")
+      color.codes_for(16_000_000).should eq(color.codes_for(16))
+    end
+
+    it "gives precedence to high color depths" do
+      color = klass.new.set style: "italic", fg: "#FFFFFF", bg: "#FF0000",
+       style16: "bold", fg16: "white", bg16: "red"
+
+       color.codes_for(16_000_000).should_not eq color.codes_for(16)
+       color.codes_for(16_000_000).should eq "\e[3m\e[38;2;255;255;255m\e[48;2;255;0;0m"
+    end
+
+    it "does not fall back to lower depth colors if set to 'none'" do
+      color = klass.new.set fg: "none", bg: "#BADA55", fg16: "red", bg16: "green"
+      color.codes_for(16_000_000).should_not eq color.codes_for(16)
+      color.codes_for(16_000_000).should eq("\e[48;2;186;218;85m")
+    end
   end
 
   describe "color codes" do
