@@ -8,8 +8,8 @@ description: |
   Visualize your files on the commandline.
 
 dependencies:
-  libmagic-crystal:
-    github: pablotron/libmagic-crystal
+  magic:
+    github: dscottboggs/magic.cr
 
 # development_dependencies:
 #   webmock:
