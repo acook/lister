@@ -40,6 +40,12 @@ describe Themer do
     theme.save theme_file
     loaded_theme = Themer::Theme.load theme_file
 
-    loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
+    loaded_theme.should be_a Themer::Theme
+
+    if loaded_theme.nil?
+      raise "loaded_theme is nil!"
+    else
+      loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
+    end
   end
 end
