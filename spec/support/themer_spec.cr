@@ -30,15 +30,6 @@ describe Themer do
     test_theme.for("unknown").codes.should eq(default.codes)
   end
 
-  it "falls back to lower color depth colors if higher ones aren't set" do
-    test_theme.for("err").codes_for(16_000_000).should eq(test_theme.for("err").codes_for(16))
-  end
-
-  it "does not fall back to lower depth colors if set to 'none'" do
-    test_theme.for("hasnoneset").codes_for(16_000_000).should eq("")
-  end
-
-
   it "does all the things" do
     theme = test_theme
 
