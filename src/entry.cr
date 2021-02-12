@@ -23,10 +23,10 @@ module Lister
       # broken symlinks return false from exists? but
       # libmagic still provides useful info for them
       if path.exists? || path.symlink?
-        raw_type = options.magic.file path.to_s
+        raw_type = options.magic.of path.to_s
         # remove the full path prefix from libmagic's result
         @type = raw_type.sub(/^#{path}:\s+/, "").strip
-        @mime = options.magic_mime.file path.to_s
+        @mime = options.magic_mime.of path.to_s
       else
         # this will happen if the user specifies a nonexistent file
         @type = "(FILE NOT FOUND)"

@@ -1,4 +1,4 @@
-require "libmagic-crystal/magic"
+require "magic/magic"
 require "./support/terminal"
 require "./support/themer/themer"
 
@@ -53,8 +53,8 @@ module Lister
     property show_mime_types : Bool = false
     property recurse : Int8 = 1_i8
 
-    property magic : Magic::Magic
-    property magic_mime : Magic::Magic
+    property magic : Magic::TypeChecker
+    property magic_mime : Magic::TypeChecker
     property terminal = Terminal.new
 
     property palette : Int32 = Int32::MAX
@@ -66,8 +66,8 @@ module Lister
       #   which is an extremely limited subset of possible types
       #   the below line could be used instead, but
       #   the current flags also search compressed files
-      @magic = Magic::Magic.new flags: Magic::LibMagic::Flags::COMPRESS.to_i
-      @magic_mime = Magic::Magic.new flags: Magic::LibMagic::Flags::MIME.to_i
+      (@magic = Magic::TypeChecker.new).look_into_compressed_files
+      (@magic_mime = Magic::TypeChecker.new).get_mime_type
     end
 
     def recurse?
