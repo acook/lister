@@ -40,6 +40,7 @@ module Themer
 
     def codes_for(color_depth : Int32)
       new_codes = Array(String).new
+      weight = 0 # for tracking if true-color fg and bgs are both provided
 
       if style && color_depth > 256
         new_codes << "#{s style}" unless style == "none"
@@ -50,6 +51,7 @@ module Themer
       end
 
       if fg && color_depth > 256
+        weight += 1
         new_codes << "38;2;#{ct fg}" unless fg == "none"
       elsif fg256 && color_depth > 16
         new_codes << "38;5;#{fg256}" unless fg256 == "none"
@@ -58,6 +60,7 @@ module Themer
       end
 
       if bg && color_depth > 256
+        weight += 1
         new_codes << "48;2;#{ct bg}" unless bg == "none"
       elsif bg256 && color_depth > 16
         new_codes << "48;5;#{bg256}" unless bg256 == "none"
@@ -65,8 +68,9 @@ module Themer
         new_codes << "4#{c16 bg16}" unless bg16 == "none"
       end
 
-      # this should just be ";" but some terminals can't handle true color fg and bg in a single go
-      new_codes_string = new_codes.join("m\e[")
+      # the sep should just be ";" but some terminals can't handle true color fg and bg in a single go
+      sep = weight > 1 ? "m\e[" : ";"
+      new_codes_string = new_codes.join(sep)
       new_codes_string.empty? ? "" : "\e[" + new_codes_string + "m"
     end
 
@@ -103,7 +107,7 @@ module Themer
         style: style, fg: fg, bg: bg,
         style256: style256, fg256: fg256, bg256: bg256,
         style16: style16, fg16: fg16, bg16: bg16,
-      }.to_h.delete_if { |_, v| !v || v.empty? }
+      }.to_h.reject! { |_, v| !v || v.empty? }
     end
 
     def to_yaml(*args)
