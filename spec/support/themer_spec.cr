@@ -26,19 +26,5 @@ describe Themer do
     theme["thehellofit"].codes.should eq "\e[48;5;33m"
     theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"
     theme.for(%w{bar qux}).codes.should eq "\e[38;2;225;225;0m"
-
-    # test saving and loading
-    theme_file = "./tmp/my_testing_theme.theme"
-    File.delete theme_file if File.exists? theme_file
-    theme.save theme_file
-    loaded_theme = Themer::Theme.load theme_file
-
-    loaded_theme.should be_a Themer::Theme
-
-    if loaded_theme.nil?
-      raise "loaded_theme is nil!"
-    else
-      loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
-    end
   end
 end

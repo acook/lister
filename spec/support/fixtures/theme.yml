@@ -1,0 +1,62 @@
+---
+DEFAULT:
+  style: normal
+sigil:
+  style16: bold
+  fg16: white
+broken:
+  style: crossed_out
+  fg: '#FFFFFF'
+  bg: '#FF0000'
+  style16: crossed_out
+  fg16: white
+  bg16: red
+directory:
+  style: none
+  fg: '#999999'
+  style256: none
+  fg256: "244"
+  style16: bold
+  fg16: black
+document:
+  style16: italic
+  fg16: green
+text:
+  style16: italic
+source:
+  fg16: white
+shell:
+  fg: '#344D3F'
+  fg16: green
+script:
+  fg16: white
+perl:
+  style: bold
+  fg16: yellow
+ruby:
+  fg: '#CC0000'
+  fg16: red
+program:
+  fg16: blue
+x86_32:
+  fg: '#0071c5'
+x86_64:
+  fg: '#009A66'
+arm_32:
+  fg: '#0091BD'
+arm_64:
+  fg: '#333E48'
+special:
+  fg16: yellow
+image:
+  style16: bold
+  fg16: magenta
+compressed:
+  style16: bold
+zip:
+  fg: '#11699b'
+wad:
+  style: bold
+  fg: '#2A5225'
+  style16: bold
+  fg16: green
