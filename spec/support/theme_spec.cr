@@ -4,7 +4,9 @@ describe Themer::Theme do
   klass = Themer::Theme
 
   it "allows default to be nil" do
-    klass.new.default.should be_nil
+    theme = klass.new
+
+    theme.default.should be_nil
   end
 
   it "falls back to default if ID not found" do
