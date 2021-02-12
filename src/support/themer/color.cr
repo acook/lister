@@ -38,6 +38,8 @@ module Themer
       @codes ||= codes_for(color_depth: 16_000_000)
     end
 
+    # calculate the codes for a given color depth
+    # a value of "skip" means to stop processing that element type
     def codes_for(color_depth : Int32)
       new_codes = Array(String).new
       weight = 0 # for tracking if true-color fg and bgs are both provided
