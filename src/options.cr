@@ -11,7 +11,8 @@ module Lister
     DEFAULT_THEME = Themer.build do
       default style: "normal"
 
-      for "sigil", style16: "bold", fg16: "white", fg: "#FFFFFF"
+      for "sigil",
+        style16: "bold", fg16: "white"
 
       for "broken",
         style: "crossed_out" , fg: "#FFFFFF", bg: "#FF0000",
@@ -22,7 +23,8 @@ module Lister
         style256: "none", fg256: "244",
         style16:  "bold", fg16: "black"
 
-      for "document", style16: "italic"
+      for "document",
+        fg16: "green", style16: "italic"
       for "text", style16: "italic"
 
       for "source", fg16: "white"
@@ -32,20 +34,26 @@ module Lister
         for "script", fg16: "white"
           for "perl", style: "bold", fg16: "yellow"
           for "ruby", fg16: "red", fg: "#CC0000"
+
       for "program", fg16: "blue"
         for "x86_32", fg: "#0071c5"
         for "x86_64", fg: "#009A66"
         for "arm_32", fg: "#0091BD"
         for "arm_64", fg: "#333E48"
+
       for "special", fg16: "yellow"
         # link
         # socket
-      for "image", style: "bold", fg16: "magenta"
+
+      for "image", style16: "bold", fg16: "magenta"
         # gif
         # jpeg
+
       for "compressed", style16: "bold"
-        #for "zip", fg: "#11699b"
-        for "wad", style: "bold", fg: "#2A5225", style16: "bold", fg16: "green"
+        for "zip", fg: "#11699b"
+        for "wad",
+          style: "bold", fg: "#2A5225",
+          style16: "bold", fg16: "green"
     end
 
     property show_hidden : Bool = false

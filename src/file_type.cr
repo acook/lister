@@ -97,21 +97,21 @@ module FT
       type :xml, :data, /XML/
 
     type :program, nil, /program|executable/
-      type :win32,  :program, /MS Windows/
-      type :x86_32, :program, /executable.*(i386|Intel 80386)/
-      type :x86_64, :program, /executable.*(x86-64)/
-      type :arm_32, :program, /(32-bit).*executable.*(ARM)/
-      type :arm_64, :program, /(64-bit).*executable.*(ARM)/
+      type :win32,  :program, /MS Windows/i
+      type :x86_32, :program, /executable.*(i386|Intel 80386)/i
+      type :x86_64, :program, /executable.*(x86-64)/i
+      type :arm_32, :program, /(32-bit).*executable.*(ARM)/i
+      type :arm_64, :program, /(64-bit).*executable.*(ARM)/i
 
     type :source
-      type :c,     :source, /c source/
-      type :shell, :source, /shell|SHELL/
-        type :bash, :shell, /bash|Bourne/
-        type :zsh, :shell, /zsh/
+      type :c,     :source, /c source/i
+      type :shell, :source, /shell/i
+        type :bash, :shell, /bash|Bourne/i
+        type :zsh, :shell, /zsh/i
       type :script, :source
-        type :perl, :script, /perl|Perl/
-        type :ruby, :script, /ruby|Ruby/
-        type :python, :script, /python/
+        type :perl, :script, /perl/i
+        type :ruby, :script, /ruby/i
+        type :python, :script, /python/i
         type :makefile, :script, /makefile/
 
     type :compressed, nil, /archive/
