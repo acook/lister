@@ -22,8 +22,6 @@ describe Themer do
   it "does all the things" do
     theme = test_theme
 
-    theme.reset.codes.should eq theme["reset"].codes
-
     theme.for("err").codes.should eq "\e[1;37;41m"
     theme["thehellofit"].codes.should eq "\e[48;5;33m"
     theme["lookatme"].codes.should eq "\e[1;38;2;222;30;126m"

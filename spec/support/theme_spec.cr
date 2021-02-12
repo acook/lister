@@ -24,4 +24,10 @@ describe Themer::Theme do
 
     default.codes.should eq "\e[3m"
   end
+
+  it "provides handy access to reset codes" do
+    theme = klass.new
+
+    theme.reset.codes.should eq "\e[0m"
+  end
 end
