@@ -62,10 +62,6 @@ module Lister
     property full_line : Bool = false
 
     def initialize
-      # the default flags set it to only return MIME types,
-      #   which is an extremely limited subset of possible types
-      #   the below line could be used instead, but
-      #   the current flags also search compressed files
       (@magic = Magic::TypeChecker.new).look_into_compressed_files
       (@magic_mime = Magic::TypeChecker.new).get_mime_type
     end
