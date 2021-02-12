@@ -54,36 +54,37 @@ describe Themer::Color do
   describe "color codes" do
     it "produces correct normal/reset codes" do
       colorreset = klass.new.set style16: "normal"
-      colorreset.codes.should eq "\e[0m"
+      colorreset.codes_for(16).should eq "\e[0m"
     end
 
     it "produces correct 16-color codes" do
       color16 = klass.new.set bg16: "red", style16: "bold", fg16: "white"
-      color16.codes.should eq "\e[1;37;41m"
+      color16.codes_for(16).should eq "\e[1;37;41m"
     end
 
     it "produces correct 256-color codes" do
       color256 = klass.new.set bg256: "33"
-      color256.codes.should eq "\e[48;5;33m"
+      color256.codes_for(256).should eq "\e[48;5;33m"
     end
 
     it "produces correct true-color codes" do
       colortrue = klass.new.set fg: "#1CE1CE", bg: "#5E1F1E"
-      colortrue.codes.should eq "\e[38;2;28;225;206m\e[48;2;94;31;30m"
+      colortrue.codes_for(16_000_000).should eq "\e[38;2;28;225;206m\e[48;2;94;31;30m"
     end
 
     it "does split true-color sequences if both fg and bg are given" do
       colortrue = klass.new.set style: "italic", fg: "#1CE1CE", bg: "#5E1F1E"
-      colortrue.codes.count('\e').should eq 3
+      colortrue.codes_for(16_000_000).count('\e').should eq 3
     end
 
-    it "doesn't split true-color if only fg or bg are given" do
-      # note that there is only one \e escape sequence here
+    it "doesn't split true-color if only fg is given" do
       colortrue = klass.new.set style: "bold", fg: "#1CE1CE"
-      colortrue.codes.count('\e').should eq 1
+      colortrue.codes_for(16_000_000).count('\e').should eq 1
+    end
 
+    it "doesn't split true-color if only bg is given" do
       colortrue = klass.new.set style: "bold", bg: "#5E1F1E"
-      colortrue.codes.count('\e').should eq 1
+      colortrue.codes_for(16_000_000).count('\e').should eq 1
     end
   end
 end
