@@ -1,6 +1,6 @@
-version: 1.0
+version: 2.0
 shards:
   libmagic-crystal:
-    github: pablotron/libmagic-crystal
+    git: https://github.com/pablotron/libmagic-crystal.git
     version: 0.1.0
 
