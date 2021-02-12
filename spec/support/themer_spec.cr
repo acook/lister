@@ -20,16 +20,6 @@ describe Themer do
     for "hasnoneset", fg: "none", fg16: "red"
   end
 
-  it "allows default to be nil" do
-    Themer::Theme.new.default.should be_nil
-  end
-
-  it "falls back to default if ID not found" do
-    default = test_theme.default
-    fail "test theme's default was nil when it shouldn't be!" if default.nil?
-    test_theme.for("unknown").codes.should eq(default.codes)
-  end
-
   it "does all the things" do
     theme = test_theme
 
