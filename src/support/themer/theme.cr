@@ -43,7 +43,7 @@ module Themer
     def save(filename)
       per_def = @default
       per = colormap.dup
-      per["DEFAULT"] = per_def if per_def
+      per = {"DEFAULT" => per_def}.merge(per) if per_def # merge so DEFAULT is first entry
       File.open filename, mode: "w" do |file|
         file.puts YAML.dump per
       end

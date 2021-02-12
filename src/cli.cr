@@ -45,6 +45,15 @@ module Lister
         elsif arg == "--colors"
           load_theme args[i + 1]
           skip = i + 1
+        elsif arg == "--colors-export"
+          path = args[i + 1]
+          @options.theme.save path
+          skip = i + 1
+          puts "Exported internal color theme to: #{path}"
+          exit 0 # I assume this is all that makes sense to do
+        elsif arg == "--colors-list"
+          puts Formatter.list_types(options)
+          no_run = true
         elsif arg == "--color-depth"
           depth = args[i + 1]
           if depth == "16"
@@ -61,9 +70,6 @@ module Lister
           skip = i + 1
         elsif %w[-h --help].includes? arg
           usage
-          no_run = true
-        elsif arg == "--list-types"
-          puts Formatter.list_types(options)
           no_run = true
         elsif arg == "-K"
           @options.show_type_names = true
