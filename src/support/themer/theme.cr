@@ -86,5 +86,9 @@ module Themer
     def []=(id : String, color : Color)
       colormap[id] = color || raise ArgumentError.new("key cannot be nil")
     end
+
+    def ==(other : self)
+      default == other.default && colormap == other.colormap
+    end
   end
 end

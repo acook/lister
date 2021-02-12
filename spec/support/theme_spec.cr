@@ -51,6 +51,31 @@ describe Themer::Theme do
     end
   end
 
+  describe "#==" do
+    it "recognizes themes with identical settings" do
+      theme1 = klass.new.tap do |theme|
+        theme["bar"] = Themer::Color.new.set style: "italic"
+        theme["qux"] = Themer::Color.new.set style: "bold"
+      end
+
+      theme2 = klass.new.tap do |theme|
+        theme["bar"] = Themer::Color.new.set style: "italic"
+        theme["qux"] = Themer::Color.new.set style: "bold"
+      end
+
+      theme1.should eq theme2
+    end
+
+    it "detects if defaults are different" do
+      theme1 = klass.new
+      theme1.default = Themer::Color.new.set style: "italic"
+      theme2 = klass.new
+      theme2.default = Themer::Color.new.set style: "bold"
+
+      theme1.should_not eq theme2
+    end
+  end
+
   describe "loading known theme" do
     fixture_theme_file = "#{__DIR__}/fixtures/theme.yml"
 
@@ -80,7 +105,7 @@ describe Themer::Theme do
       File.exists?(theme_file).should be_true
     end
 
-    it "can load themes that it has saved" do
+    it "can load themes that it has saved and they will be identical" do
       theme = klass.new
       theme["foo"] = Themer::Color.new.set style: "none", fg16: "black", bg16: "white"
       theme.save theme_file
@@ -88,7 +113,7 @@ describe Themer::Theme do
 
       fail "loaded_them is nil!" if loaded_theme.nil?
 
-      loaded_theme.colormap.map{|_,v| v.codes}.should eq theme.colormap.map{|_,v| v.codes}
+      loaded_theme.should eq theme
     end
 
     it "preserves default fallback color" do
