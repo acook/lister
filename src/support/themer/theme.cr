@@ -11,6 +11,10 @@ module Themer
 
       File.open filename do |file|
         yaml = YAML.parse(file).as_h
+      rescue ex : YAML::ParseException
+        Themer.warn "Encountered an error in your theme file:"
+        Themer.warn "\t#{ex.message}"
+        return nil
       end
 
       per_def = nil

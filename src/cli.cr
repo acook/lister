@@ -27,7 +27,7 @@ module Lister
 
     def parse_env(env)
       if theme = env["LISTER_THEME"]?
-        @options.theme = Themer::Theme.load theme
+        load_theme env["LISTER_THEME"]
       end
       self
     end
@@ -43,7 +43,7 @@ module Lister
         elsif arg == "-A"
           @options.show_hidden = true
         elsif arg == "--colors"
-          @options.theme = Themer::Theme.load args[i + 1]
+          load_theme args[i + 1]
           skip = i + 1
         elsif arg == "--color-depth"
           depth = args[i + 1]
@@ -94,6 +94,14 @@ module Lister
         Directory.new path, options
       else
         Entry.new path, options
+      end
+    end
+
+    def load_theme(path)
+      if new_theme = Themer::Theme.load path
+        @options.theme = new_theme
+      else
+        Themer.warn "Falling back to default theme!"
       end
     end
 

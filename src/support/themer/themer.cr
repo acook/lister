@@ -12,6 +12,19 @@ module Themer
   alias StrNil = String | Nil
 
   def self.reset
-    Color.new.set style: "normal"
+    internal_theme.default
+  end
+
+  def self.warn(*messages)
+    STDERR.print internal_theme.for("warn").codes, messages.join("\n"), "\e[K", reset, "\n"
+  end
+
+  def self.internal_theme
+    @@internal_theme
+  end
+
+  @@internal_theme : Theme = build do
+    default style: "normal"
+    for "warn", style16: "bold", fg16: "white", bg16: "red"
   end
 end
