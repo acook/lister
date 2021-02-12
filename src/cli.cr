@@ -114,29 +114,35 @@ module Lister
     def usage
       this = Pathname.new(PROGRAM_NAME, no_stat: true).basename
 
-      puts "usage: #{this} [-A] [-R] [--recurse DEPTH] [<paths>]"
-      puts "\tshows colorized and structured libmagic types"
+      puts "#{this} #{Lister::VERSION}"
+      puts "Anthony M. Cook <github@anthonymcook.com>"
+      puts "http://github.com/acook/lister"
       puts
-      puts "\t--\t\tstop processing commandline options"
-      puts "\t\t\tand interpret remaining arguments as paths"
-      puts "\t-A\t\tshow hidden files (excluding . and ..)"
-      puts "\t--colors FILE\tuse specified YAML file as color theme"
+      puts "#{this} is a file and directory listing utility which shows colorized and structured libmagic types."
+      puts
+      puts "USAGE:"
+      puts "\t#{this} [OPTIONS] [PATH ...]"
+      puts "\t#{this} --colors-export PATH"
+      puts "\t#{this} --colors-list"
+      puts
+      puts "OPTIONS:"
+      puts "\t--\t\t\tstop processing commandline options and interpret remaining arguments as paths"
+      puts "\t-A\t\t\tshow hidden files (excluding . and ..)"
+      puts "\t--colors FILE\t\tuse specified YAML file as color theme"
+      puts "\t--colors-export FILE\texport internal color theme as YAML file"
+      puts "\t--colors-list\t\tdisplay list of known themeable file types in the associated color from the current theme"
       puts "\t--color-depth DEPTH\tuse the 16, 256, or true color palette"
       #puts "\t--color-line\tfill in the whole line of an entry"
       #puts "\t\t\tusually only the filename and type info is affected"
-      puts "\t-h\t\tdisplay usage information (you're looking at it!)"
-      puts "\t-K\t\tshow type names as seen by Lister"
-      puts "\t-Km\t\tshow MIME types from libMagic"
-      puts "\t--list-types\tdisplay list of known themeable file types"
-      puts "\t\t\tin the associated color from the current theme"
-      puts "\t-R\t\trecurse infinite"
-      puts "\t--recurse DEPTH\trecurse to depth"
-      puts "\t<paths>\t\ta list of zero or more paths"
-      puts "\t\t\twill scan PWD if no path supplied"
+      puts "\t-h\t\t\tdisplay usage information (you're looking at it!)"
+      puts "\t-K\t\t\tshow type names as seen by Lister"
+      puts "\t-Km\t\t\tshow MIME types from libMagic"
+      puts "\t-R\t\t\trecurse infinite"
+      puts "\t--recurse DEPTH\t\trecurse to depth"
+      puts "\t<paths>\t\t\ta list of zero or more paths will scan PWD if no path supplied"
       puts
-      puts "\tenvironment variables:"
-      puts "\tLISTER_COLORS\tfull path to the Lister theme YAML file"
-      puts "\t\t\tcan be overridden on the commandline with --colors"
+      puts "ENVIRONMENT:"
+      puts "\tLISTER_COLORS\t\tfull path to the Lister theme YAML file, can be overridden on the commandline with --colors"
     end
   end
 end
