@@ -12,6 +12,15 @@ describe Themer::Theme do
     theme = klass.new
     theme.default = Themer::Color.new.set style: "italic"
     (default = theme.default).nil? && fail "default should never be nil"
+
     theme.for("unknown").codes.should eq(default.codes)
+  end
+
+  it "has codes for the default entry" do
+    theme = klass.new
+    theme.default = Themer::Color.new.set style: "italic"
+    (default = theme.default).nil? && fail "default should never be nil"
+
+    default.codes.should eq "\e[3m"
   end
 end

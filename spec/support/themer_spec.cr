@@ -23,14 +23,6 @@ describe Themer do
   it "does all the things" do
     theme = test_theme
 
-    # @default is allowed to be nil
-    default = theme.default
-    if default
-      default.codes.should eq "\e[3m"
-    else
-      fail "theme.default was nil"
-    end
-
     theme.reset.codes.should eq theme["reset"].codes
 
     theme.for("err").codes.should eq "\e[1;37;41m"
