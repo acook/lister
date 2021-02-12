@@ -39,6 +39,16 @@ describe Themer::Color do
       color.codes_for(16_000_000).should_not eq color.codes_for(16)
       color.codes_for(16_000_000).should eq("\e[48;2;186;218;85m")
     end
+
+    it "combines higher and lower color depth settings" do
+      color = klass.new.set bg: "#BADA55", bg256: "54", fg16: "red"
+      color.codes_for(16_000_000).should eq("\e[31;48;2;186;218;85m")
+    end
+
+    it "selects apporpriate color codes for 255 color depth" do
+      color = klass.new.set bg: "#BADA55", bg256: "54", fg16: "red"
+      color.codes_for(256).should eq "\e[31;48;5;54m"
+    end
   end
 
   describe "color codes" do
