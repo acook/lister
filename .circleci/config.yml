@@ -1,0 +1,11 @@
+---
+version: 2.1
+workflows:
+  version: 2
+  build:
+    jobs:
+      - crystal/test:
+          pre-steps:
+            - run: apt-get update && apt-get install -y libmagic
+orbs:
+  crystal: manastech/crystal@1.0
