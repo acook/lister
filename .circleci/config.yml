@@ -6,6 +6,6 @@ workflows:
     jobs:
       - crystal/test:
           pre-steps:
-            - run: apt-get update && apt-get install -y libmagic
+            - run: apt-get update && apt-get install -y libmagic-dev
 orbs:
   crystal: manastech/crystal@1.0
