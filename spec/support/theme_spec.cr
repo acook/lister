@@ -2,6 +2,7 @@ require "./spec_helper"
 
 describe Themer::Theme do
   klass = Themer::Theme
+  kolor = Themer::Colorset
 
   it "provides handy access to reset codes" do
     theme = klass.new
@@ -18,7 +19,7 @@ describe Themer::Theme do
 
     it "falls back to default if ID not found" do
       theme = klass.new
-      theme.default = Themer::Color.new.set style: "italic"
+      theme.default = kolor.new style: "italic"
       (default = theme.default).nil? && fail "default should never be nil"
 
       theme.for("unknown").codes.should eq(default.codes)
@@ -26,7 +27,7 @@ describe Themer::Theme do
 
     it "has codes for the default entry" do
       theme = klass.new
-      theme.default = Themer::Color.new.set style: "italic"
+      theme.default = kolor.new style: "italic"
       (default = theme.default).nil? && fail "default should never be nil"
 
       default.codes.should eq "\e[3m"
@@ -34,8 +35,8 @@ describe Themer::Theme do
   end
 
   describe "#for with arrays" do
-    color1 = Themer::Color.new.set style: "italic"
-    color2 = Themer::Color.new.set style: "bold"
+    color1 = kolor.new style: "italic"
+    color2 = kolor.new style: "bold"
 
     theme = klass.new.tap do |theme|
       theme["bar"] = color1
@@ -54,13 +55,13 @@ describe Themer::Theme do
   describe "#==" do
     it "recognizes themes with identical settings" do
       theme1 = klass.new.tap do |theme|
-        theme["bar"] = Themer::Color.new.set style: "italic"
-        theme["qux"] = Themer::Color.new.set style: "bold"
+        theme["bar"] = kolor.new style: "italic"
+        theme["qux"] = kolor.new style: "bold"
       end
 
       theme2 = klass.new.tap do |theme|
-        theme["bar"] = Themer::Color.new.set style: "italic"
-        theme["qux"] = Themer::Color.new.set style: "bold"
+        theme["bar"] = kolor.new style: "italic"
+        theme["qux"] = kolor.new style: "bold"
       end
 
       theme1.should eq theme2
@@ -68,9 +69,9 @@ describe Themer::Theme do
 
     it "detects if defaults are different" do
       theme1 = klass.new
-      theme1.default = Themer::Color.new.set style: "italic"
+      theme1.default = kolor.new style: "italic"
       theme2 = klass.new
-      theme2.default = Themer::Color.new.set style: "bold"
+      theme2.default = kolor.new style: "bold"
 
       theme1.should_not eq theme2
     end
@@ -99,7 +100,7 @@ describe Themer::Theme do
 
     it "can save themes" do
       theme = klass.new
-      theme.default = Themer::Color.new.set style: "italic"
+      theme.default = kolor.new style: "italic"
       theme.save theme_file
 
       File.exists?(theme_file).should be_true
@@ -107,7 +108,7 @@ describe Themer::Theme do
 
     it "can load themes that it has saved and they will be identical" do
       theme = klass.new
-      theme["foo"] = Themer::Color.new.set style: "skip", fg16: "black", bg16: "white"
+      theme["foo"] = kolor.new style: "skip", fg16: "black", bg16: "white"
       theme.save theme_file
       loaded_theme = klass.load theme_file
 
@@ -118,7 +119,7 @@ describe Themer::Theme do
 
     it "preserves default fallback color" do
       theme = klass.new
-      theme.default = Themer::Color.new.set style: "skip", fg16: "black", bg16: "white"
+      theme.default = kolor.new style: "skip", fg16: "black", bg16: "white"
       theme.save theme_file
       loaded_theme = klass.load theme_file
 

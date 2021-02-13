@@ -1,6 +1,8 @@
 module Themer
-  class Color
-    property codes : StrNil
+  struct Colorset
+    COLORS = %w[black red green yellow blue magenta cyan white extended default]
+    STYLES = %w[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
+    TRUECOLOR = 16_000_000
 
     property style : StrNil
     property fg : StrNil
@@ -14,33 +16,16 @@ module Themer
     property fg256 : StrNil
     property bg256 : StrNil
 
-    def set(
-      style : StrNil = nil, fg : StrNil = nil, bg : StrNil = nil,
-      style16 : StrNil = nil, fg16 : StrNil = nil, bg16 : StrNil = nil,
-      style256 : StrNil = nil, fg256 : StrNil = nil, bg256 : StrNil = nil
+    def initialize(
+      @style : StrNil = nil, @fg : StrNil = nil, @bg : StrNil = nil,
+      @style16 : StrNil = nil, @fg16 : StrNil = nil, @bg16 : StrNil = nil,
+      @style256 : StrNil = nil, @fg256 : StrNil = nil, @bg256 : StrNil = nil
     )
-      @style = style if style && !style.empty?
-      @fg = fg if fg && !fg.empty?
-      @bg = bg if bg && !bg.empty?
-
-      @style16 = style16 if style16 && !style16.empty?
-      @fg16 = fg16 if fg16 && !fg16.empty?
-      @bg16 = bg16 if bg16 && !bg16.empty?
-
-      @style256 = style256 if style256 && !style256.empty?
-      @fg256 = fg256 if fg256 && !fg256.empty?
-      @bg256 = bg256 if bg256 && !bg256.empty?
-
-      self # return self for chaining
-    end
-
-    def codes
-      @codes ||= codes_for(color_depth: 16_000_000)
     end
 
     # calculate the codes for a given color depth
     # a value of "skip" means to stop processing that element type
-    def codes_for(color_depth : Int32)
+    def codes(color_depth : Int32 = TRUECOLOR)
       new_codes = Array(String).new
       weight = 0 # for tracking if true-color fg and bgs are both provided
 
@@ -73,7 +58,12 @@ module Themer
       # the sep should just be ";" but some terminals can't handle true color fg and bg in a single go
       sep = weight > 1 ? "m\e[" : ";"
       new_codes_string = new_codes.join(sep)
-      new_codes_string.empty? ? "" : "\e[" + new_codes_string + "m"
+
+      if new_codes_string.empty?
+        new_codes_string
+      else
+        "\e[" + new_codes_string + "m"
+      end
     end
 
     def s(name : StrNil)
@@ -110,17 +100,14 @@ module Themer
 
     def to_hash
       {
-        style: style, fg: fg, bg: bg,
-        style256: style256, fg256: fg256, bg256: bg256,
-        style16: style16, fg16: fg16, bg16: bg16,
-      }.to_h.reject! { |_, v| !v || v.empty? }
+        :style => style, :fg => fg, :bg => bg,
+        :style256 => style256, :fg256 => fg256, :bg256 => bg256,
+        :style16 => style16, :fg16 => fg16, :bg16 => bg16,
+      }.reject! { |_, v| !v || v.empty? }
     end
 
     def to_yaml(*args)
       to_hash.to_yaml *args
     end
-
-    COLORS = %w[black red green yellow blue magenta cyan white extended default]
-    STYLES = %w[normal bold faint italic underlined blink blink_fast inverse conceal crossed_out]
   end
 end

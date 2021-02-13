@@ -1,4 +1,4 @@
-require "./color"
+require "./colorset"
 require "./builder"
 require "./theme"
 

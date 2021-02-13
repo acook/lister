@@ -3,13 +3,13 @@ module Themer
     property theme = Theme.new
 
     def for(id : String, **args)
-      color = Color.new.set **args
+      color = Colorset.new **args
       @theme[id] = color
       @theme
     end
 
     def default(**args)
-      @theme.default = Color.new.set(**args)
+      @theme.default = Colorset.new(**args)
     end
   end
 end
