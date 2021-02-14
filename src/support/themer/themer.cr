@@ -11,11 +11,11 @@ module Themer
   alias StrNil = String | Nil
 
   def self.reset
-    internal_theme.default
+    internal_theme.reset
   end
 
   def self.warn(*messages)
-    STDERR.print internal_theme.for("warn").codes, messages.join("\n"), "\e[K", reset, "\n"
+    STDERR.print internal_theme.for("warn"), messages.join("\n"), "\e[K", reset, "\n"
   end
 
   def self.internal_theme
