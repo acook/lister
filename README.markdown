@@ -98,6 +98,10 @@ Run the build script:
 Put the resulting binary somewhere in your path:
 - `mv bin/lister ~/bin/`
 
+To build a release version, run the release script:
+- `./scripts/release`
+(if you don't have [Docker](https://www.docker.com/) installed, it will only build it for the local machine)
+
 Created By
 =========
 
