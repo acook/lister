@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+thispath="$(dirname "${BASH_SOURCE[0]}")"
+
+cd "$thispath"/.. || exit 1
+
+command_exists() { command -v "$1" > /dev/null 2>&1; }
+#find_libd () { dirname "$(find /usr/lib /opt /usr/local/opt -name "*lib$1.so*" -quit 2> /dev/null;)"; }
+find_liba () { find /usr/lib /opt /usr/local/opt -name "*lib$1.a*" -quit 2> /dev/null; }
+
+if command_exists osinfo.bash; then
+  OS=$(osinfo.bash)
+else
+  OS=$(uname)
+fi
+
+# Linker flags, primarily useful for static builds but also for systems which don't have libraries in the normal search path
+if command_exists brew; then
+  # MacOS Linker flags from Homebrew
+  echo "Pulling library dependencies from Homebrew..."
+  LINK_FLAGS="$(brew --prefix zlib)/lib/libz.a $(brew --prefix bzip2)/lib/libbz2.a $(brew --prefix libmagic)/lib/libmagic.a"
+else
+  # ideally these should be pulled in for any OS
+  echo "Looking for libraries, this might take some time, especially if they're missing!"
+  LINK_FLAGS="-lmagic -lz -lbz2 $(find_liba magic) $(find_liba z) $(find_liba bz2)"
+fi
+
+echo "Building standard release for native platform ($OS)..."
+crystal build src/lister.cr -o "bin/lister.$OS" --release --no-debug
+echo "Building libmagic-static release for native platform ($OS)..."
+crystal build src/lister.cr -o "bin/lister.static.$OS" --release --no-debug --link-flags "$LINK_FLAGS"
+
+# for the docker image with known locations
+ALPINE_LINK_FLAGS="-lmagic -lz -lbz2 -L /opt/src/file/src/.libs -L /opt/src/zlib -L /opt/src/bzip2"
+
+echo "Building standard release for Linux x86_64..."
+docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
+    crystal build src/lister.cr -o "bin/lister.alpine" --release --no-debug --link-flags "$ALPINE_LINK_FLAGS"
+echo "Building static release for Linux x86_64..."
+docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
+    crystal build src/lister.cr -o "bin/lister.static.alpine" --static --release --no-debug --link-flags "$ALPINE_LINK_FLAGS"
