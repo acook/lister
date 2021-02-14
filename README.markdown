@@ -3,6 +3,7 @@ Lister
 
 Lister is a little directory lister that does filetype analysis!
 
+[![GitHub release](https://img.shields.io/github/release/acook/lister.svg?style=for-the-badge)](https://github.com/acook/lister/releases)
 [![CircleCI](https://img.shields.io/circleci/build/github/acook/lister?style=for-the-badge)](https://app.circleci.com/pipelines/github/acook/lister)
 
 Killer Features
