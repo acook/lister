@@ -77,6 +77,11 @@ ENVIRONMENT:
 	LISTER_COLORS		full path to the Lister theme YAML file, can be overridden on the commandline with --colors
 ~~~
 
+Installing
+==========
+
+Check out [the releases page](https://github.com/acook/lister/releases) for downloads and instructions!
+
 Building
 ========
 
