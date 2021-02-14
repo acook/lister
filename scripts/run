@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-crystal run src/lister.cr -- "$@" | tee /dev/null
+crystal run src/lister.cr -- "$@"
