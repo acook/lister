@@ -10,6 +10,10 @@ Bugs
 Planned
 -------
 
+### Core
+- Handle missing libmagic database
+- Include libmagic database in binary
+
 ### Themer
 
 - (DONE) Allow themes to have fallback colors for different color depths
@@ -25,6 +29,10 @@ Planned
 
 - (DONE) flag executable files somehow
 - Tree-like line-drawing characters option for indentation
+- Don't display "ERROR" when gz finds a zip file confusing
+- Include webp files as images
+- Allow different sigils to have different colors?
+- Integrate with git to display info about the directory/files?
 
 ### Output Options
 
@@ -34,6 +42,7 @@ Planned
 - Option to display shortened formatting output (names+colors only)
 - Option to display creation/modification/access times
 - Option to display unix attributes user/group/r/w/x
+- Option to disable zip profiling
 
 ### Future
 
