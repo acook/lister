@@ -23,14 +23,36 @@ module FT
   end
 
   class Builder
-    property nodes = TypeMap.new
+    property nodes : TypeMap = TypeMap.new
+    property type : Node | Nil = nil
+
+    def initialize(@type = nil)
+    end
 
     def type(name, parent : Symbol | Node | Nil = nil, regex : Regex | Nil = nil) : Node
+      type(name, regex, parent) {}
+    end
+
+    def type(name, regex : Regex | Nil = nil, parent : Symbol | Node | Nil = nil) : Node
+      type(name, regex, parent) {}
+    end
+
+    def type(name, regex : Regex | Nil = nil, parent : Symbol | Node | Nil = nil) : Node
       if parent.is_a? Symbol
         parent = nodes[parent]
+      else
+        parent ||= @type
       end
 
-      nodes[name] = Node.new name, parent, regex
+      new_node = Node.new name, parent, regex
+
+      sub_builder = self.class.new new_node
+
+      with sub_builder yield
+
+      nodes[name] = new_node
+      nodes.merge! sub_builder.nodes
+      new_node
     end
 
     def default(name) : Node
