@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-crystal spec "$@"
+crystal spec "$@" --error-trace
