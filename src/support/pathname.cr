@@ -74,6 +74,10 @@ class Pathname
       @stat = File.info File.expand_path path
     rescue ex : File::NotFoundError # don't freak out if the path doesn't exist
       #puts "file not found : #{File.expand_path path}"
+    rescue ex : File::Error
+      message = ex.message
+      raise ex if message.nil?
+      raise ex unless message.includes? "Not a directory"
     end
     !!@stat
   end
