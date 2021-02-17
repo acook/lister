@@ -70,8 +70,8 @@ module Lister
     property full_line : Bool = false
 
     def initialize
-      (@magic = Magic::TypeChecker.new).look_into_compressed_files
-      (@magic_mime = Magic::TypeChecker.new).get_mime_type
+      (@magic = Magic::TypeChecker.new).look_into_compressed_files.return_error_as_text
+      (@magic_mime = Magic::TypeChecker.new).get_mime_type.return_error_as_text
     end
 
     def recurse?

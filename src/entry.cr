@@ -1,3 +1,5 @@
+require "./support/pathname"
+
 module Lister
   # the Entry class represents a single file in a directory
   # it wraps the Pathname object which is essentially just
