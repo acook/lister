@@ -9,7 +9,7 @@ command_exists() { command -v "$1" > /dev/null 2>&1; }
 find_liba () { find /usr/lib /opt /usr/local/opt -name "*lib$1.a*" -quit 2> /dev/null; }
 
 if command_exists osinfo.bash; then
-  OS=$(osinfo.bash)
+  OS=$(osinfo.bash | head -1)
 else
   OS=$(uname)
 fi
