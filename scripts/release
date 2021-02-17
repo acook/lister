@@ -30,12 +30,16 @@ crystal build src/lister.cr -o "bin/lister.$OS" --release --no-debug
 echo "Building libmagic-static release for native platform ($OS)..."
 crystal build src/lister.cr -o "bin/lister.static.$OS" --release --no-debug --link-flags "$LINK_FLAGS"
 
-# for the docker image with known locations
-ALPINE_LINK_FLAGS="-lmagic -lz -lbz2 -L /opt/src/file/src/.libs -L /opt/src/zlib -L /opt/src/bzip2"
+if command_exists docker; then
+  # for the docker image with known locations
+  ALPINE_LINK_FLAGS="-lmagic -lz -lbz2 -L /opt/src/file/src/.libs -L /opt/src/zlib -L /opt/src/bzip2"
 
-echo "Building standard release for Linux x86_64..."
-docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
+  echo "Building standard release for Linux x86_64..."
+  docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
     crystal build src/lister.cr -o "bin/lister.alpine" --release --no-debug --link-flags "$ALPINE_LINK_FLAGS"
-echo "Building static release for Linux x86_64..."
-docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
+  echo "Building static release for Linux x86_64..."
+  docker run --rm -it -v "$PWD":/workspace -w /workspace lister:latest \
     crystal build src/lister.cr -o "bin/lister.static.alpine" --static --release --no-debug --link-flags "$ALPINE_LINK_FLAGS"
+fi
+
+echo done!
