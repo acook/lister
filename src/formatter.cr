@@ -99,7 +99,7 @@ module Lister
 
     def type_names(entry)
       typeinfo = FT.match(entry.type).reduce(Array(String).new) do |acc, types|
-        acc << (types.is_a?(Array) ? types : [types]).reverse.join("/")
+        acc << (types.is_a?(Array) ? types.reverse.join("/") : types)
       end
 
       typeinfo.join(", ")
