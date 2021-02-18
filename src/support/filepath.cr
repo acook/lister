@@ -17,7 +17,7 @@ class FilePath
     when FilePath
       value
     else
-      raise ArgumentError, "can't wrap #{value.class} in #{self.name}"
+      raise ArgumentError, "can't wrap #{value.class} in #{name}"
     end
   end
 
