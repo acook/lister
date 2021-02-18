@@ -23,7 +23,7 @@ module Lister
     end
 
     def mime(entry)
-      magic_mime.file entry
+      magic_mime.of entry
     end
   end
 end
