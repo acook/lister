@@ -139,12 +139,12 @@ module Lister
       def type
         if children.size > 0
           super + " (#{children.size})"
+        elsif @children_access_denied
+          super + " (permission denied)"
         elsif children.size == 0
           super + " (empty)"
         #elsif children_count == -1 && fp.symlink?
         #  super + " (#{path.entries.size})"
-        elsif @children_access_denied
-          super + " (permission denied)"
         else
           super + " (unknown)"
         end
