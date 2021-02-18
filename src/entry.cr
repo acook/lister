@@ -10,32 +10,25 @@ module Lister
     end
 
     def build(uri) : Entry
-      exists = ::File.exists? uri
-      info = ::File.info? uri
-      type = info.type unless info.nil?
+      fp = FilePath.new uri
 
       case
-      when type.nil? && File.symlink? uri
-        info = ::File.info? uri, false
-        Entry::Symlink.new uri, info, self
-      when type.nil? && !exists
-        Entry::NotFound.new uri, info, self
-      when type.nil?
-        Entry::Unknown.new uri, info, self
-      when type.symlink?
-        Entry::Symlink.new uri, info, self
-      when type.directory?
-        Entry::Directory.new uri, info, self
-      when type.pipe?
-        Entry::Pipe.new uri, info, self
-      when type.socket?
-        Entry::Socket.new uri, info, self
-      when type.device?
-        Entry::Device.new uri, info, self
-      when type.file?
-        Entry::File.new uri, info, self
+      when fp.symlink?
+        Entry::Symlink.new fp, self
+      when fp.missing?
+        Entry::NotFound.new fp, self
+      when fp.directory?
+        Entry::Directory.new fp, self
+      when fp.pipe?
+        Entry::Pipe.new fp, self
+      when fp.socket?
+        Entry::Socket.new fp, self
+      when fp.device?
+        Entry::Device.new fp, self
+      when fp.file?
+        Entry::File.new fp, self
       else
-        Entry::Unknown.new uri, info, self
+        Entry::Unknown.new fp, self
       end
     end
   end
@@ -45,21 +38,15 @@ module Lister
     # this combined with <=> makes Entries sortable
     include Comparable(Entry)
 
-    property name : String
-    property path : Path
-    property info : ::File::Info | Nil
+    property fp : FilePath
     property fullpath : String | Nil
     property children = Array(Entry).new
     property longest : Int16 | Nil
-    property type : String | Nil
+    property magic : String | Nil
     property mime : String | Nil
     property factory : EntryFactory
 
-    def initialize(path_string, path_info = nil, factory = EntryFactory.new)
-      @path = Path.new path_string
-      @name = path.basename.to_s
-      @info = path_info
-      @factory = factory
+    def initialize(@fp, @factory = EntryFactory.new)
     end
 
     # sort files by name
@@ -69,7 +56,7 @@ module Lister
     end
 
     def type
-      @type ||= factory.engine.type self.fullpath
+      @magic ||= factory.engine.type self.fullpath
     end
 
     def mime
@@ -77,23 +64,11 @@ module Lister
     end
 
     def fullpath
-      @fullpath ||= ::File.expand_path path
+      @fullpath ||= fp.expand_path.to_s
     end
 
     def longest
       @longest ||= name.size.to_i16
-    end
-
-    def executable?
-      ::File.executable? fullpath
-    end
-
-    def reset
-      @type = nil
-      @mime = nil
-      @fullpath = nil
-      @longest = nil
-      @info = ::File.info fullpath
     end
 
     class File < Entry
@@ -124,11 +99,11 @@ module Lister
       end
 
       def fullpath
-        @fullpath ||= path.to_s
+        fp.to_s
       end
 
       def name
-        path.basename.to_s
+        fp.name
       end
     end
 
@@ -160,7 +135,7 @@ module Lister
           super + " (#{children.size})"
         elsif children.size == 0
           super + " (empty)"
-        #elsif children_count == -1 && info.symlink?
+        #elsif children_count == -1 && fp.symlink?
         #  super + " (#{path.entries.size})"
         elsif @children_access_denied
           super + " (permission denied)"

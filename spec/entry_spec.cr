@@ -16,13 +16,21 @@ describe Lister::EntryFactory do
       system "ln -s #{nothere} #{nowhere} 2> /dev/null"
 
       e = new_entry(nowhere)
+      e.fp.symlink?.should eq true
       e.type.should eq "broken symbolic link to #{nothere}"
     ensure
       system "rm #{nowhere}"
     end
 
     it "doesn't error when called on a subdirectory of a file" do
-      new_entry "/dev/null/nowhere"
+      e = new_entry "/dev/null/nowhere"
+      e.type.should eq "(FILE NOT FOUND)"
     end
+  end
+
+  it "should recognize files" do
+    e = new_entry "."
+    e.fp.exists?.should eq true
+    e.type.should contain "directory ("
   end
 end
