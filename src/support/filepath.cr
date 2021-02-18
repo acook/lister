@@ -55,13 +55,7 @@ class FilePath
   end
 
   def restat
-    fileinfo = File.info? expand_path
-    if fileinfo.nil?
-      puts "fileinfo was nil"
-      fileinfo = File.info? expand_path, false
-    end
-    p fileinfo
-    @stat = fileinfo.nil? ? FileNotFoundInfo.new : fileinfo
+    initialize @orig
   end
 
   def entries
