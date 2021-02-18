@@ -1,3 +1,5 @@
+require "./support/filepath"
+
 module Lister
   # Builds Entry objects from a given path using a libMagic engine
   # usage:
