@@ -43,7 +43,7 @@ module Lister
     property fp : FilePath
     property fullpath : String | Nil
     property children = Array(Entry).new
-    property longest : Int16 | Nil
+    property longest : Int32 | Nil
     property magic : String | Nil
     property mime : String | Nil
     property factory : EntryFactory
@@ -70,7 +70,7 @@ module Lister
     end
 
     def longest
-      @longest ||= name.size.to_i16
+      @longest ||= name.size
     end
 
     def sigil : String
@@ -169,7 +169,7 @@ module Lister
       end
 
       def longest
-        @longest ||= children.max_by{|child| child.name.to_s }.name.to_s.size.to_i16
+        @longest ||= children.max_by{|child| child.name.size }.name.size
       end
 
       def sigil

@@ -39,7 +39,7 @@ module Lister
       info += entry.sigil
       post_sigil = info.size
 
-      info += just (entry.name + entry.sigil).size, longest + 1
+      info += just info.size, longest + 1
       info += div
 
       info += type_info entry
