@@ -21,13 +21,13 @@ module Lister
     end
 
     def render_recurse(entry, recurse_depth, parent_longest, indent = 0)
-      unless entry.children.size > 0
+      register_recurse entry do
         line entry, parent_longest, indent
-      else
-        line entry, parent_longest, indent
-        entry.children.each do |child|
-          render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)
-        end unless recurse_depth < 1
+        if entry.children.size > 0 && recurse_depth > 0
+          entry.children.each do |child|
+            render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)
+          end
+        end
       end
     end
 
@@ -106,6 +106,21 @@ module Lister
 
     def console_width
       options.terminal.width
+    end
+
+    def register_recurse(entry)
+      inode = entry.fp.inode
+
+      reg = @@registry ||= Set(UInt64).new
+
+      if reg.includes? inode
+        "[RECURSIVE DIRECTORY #{entry.name}]"
+      else
+        reg << inode
+        retval = yield
+        reg.delete inode
+        retval
+      end
     end
   end
 end

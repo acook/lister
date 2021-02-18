@@ -142,6 +142,7 @@ module Lister
           Dir.open(fullpath) do |dir|
             dir.each do |entry|
               next if skip.includes? entry
+              next if entry[0] == '.'
               children << factory.build ::File.expand_path(entry, fullpath)
             end
           end

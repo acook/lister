@@ -58,6 +58,12 @@ class FilePath
     initialize @orig
   end
 
+  def inode
+    stat = uninitialized LibC::Stat
+    ret = LibC.lstat(path.to_s.check_no_null_byte, pointerof(stat))
+    stat.st_ino
+  end
+
   def entries
     Dir.entries(path)
   end
