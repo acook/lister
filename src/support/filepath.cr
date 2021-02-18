@@ -108,8 +108,8 @@ class FilePath
     end
   end
 
-  delegate executable?, file?, directory?, symlink?, pipe?, socket?, blockdev?, chardev?, device?, unknown?, to: @stat.type
-  delegate_attr exists?, to: File, using: @path
+  delegate file?, directory?, symlink?, pipe?, socket?, blockdev?, chardev?, device?, unknown?, to: @stat.type
+  delegate_attr exists?, executable?, to: File, using: @path
 
   macro method_missing(call)
     retwrap path.{{call}}
