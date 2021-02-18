@@ -73,6 +73,14 @@ module Lister
       @longest ||= name.size.to_i16
     end
 
+    def name
+      fp.basename.to_s
+    end
+
+    def executable?
+      fp.executable?
+    end
+
     class File < Entry
     end
 
@@ -102,10 +110,6 @@ module Lister
 
       def fullpath
         fp.to_s
-      end
-
-      def name
-        fp.name
       end
     end
 
