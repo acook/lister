@@ -73,6 +73,14 @@ module Lister
       @longest ||= name.size.to_i16
     end
 
+    def sigil : String
+      if executable?
+        "*"
+      else
+        ""
+      end
+    end
+
     def name
       fp.basename.to_s
     end
@@ -85,9 +93,15 @@ module Lister
     end
 
     class Symlink < Entry
+      def sigil
+        "@"
+      end
     end
 
     class Pipe < Entry
+      def sigil
+        "|"
+      end
     end
 
     class Socket < Entry
@@ -110,6 +124,10 @@ module Lister
 
       def fullpath
         fp.to_s
+      end
+
+      def sigil
+        "?"
       end
     end
 
@@ -152,6 +170,10 @@ module Lister
 
       def longest
         @longest ||= children.max_by{|child| child.name.to_s }.name.to_s.size.to_i16
+      end
+
+      def sigil
+        "/"
       end
     end
   end

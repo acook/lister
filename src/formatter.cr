@@ -36,10 +36,10 @@ module Lister
 
       info += entry.name
       pre_sigil = info.size
-      info += attr entry
+      info += entry.sigil
       post_sigil = info.size
 
-      info += just (entry.name + attr entry).size, longest + 1
+      info += just (entry.name + entry.sigil).size, longest + 1
       info += div
 
       info += type_info entry
@@ -52,7 +52,7 @@ module Lister
 
       # inject the color codes so we don't have to worry about them earlier
       info = info.insert post_sigil, color(entry)
-      info = info.insert pre_sigil, attr_color(entry)
+      info = info.insert pre_sigil, sigil_color(entry)
 
       print color(entry), "\e[K" if options.full_line
       print indentation(indent), color(entry), info, options.theme.reset, "\n"
@@ -66,25 +66,8 @@ module Lister
       end
     end
 
-    def attr(entry) : String
-      case entry
-      when Entry::Symlink
-        "@"
-      when Entry::Pipe
-        "|"
-      when Entry::Directory
-        "/"
-      else
-        if entry.executable?
-          "*"
-        else
-          ""
-        end
-      end
-    end
-
-    def attr_color(entry) : String
-      options.theme.for([attr(entry)]).codes(options.palette)
+    def sigil_color(entry) : String
+      options.theme.for([entry.sigil]).codes(options.palette)
     end
 
     def type_info(entry)
