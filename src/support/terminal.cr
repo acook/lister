@@ -53,7 +53,7 @@ class Terminal
         # NOTE: if we're hitting this error,
         # then the TIOCGWINSZ is probably fubar for this platform
         msg = "ioctl failed to get window size (TIOCGWINSZ=#{TIOCGWINSZ}"
-        raise IO::Error.from_errno(msg, err)
+        raise IO::Error.from_os_error(msg, err)
       end
     end
   end
