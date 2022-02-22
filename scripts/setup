@@ -12,14 +12,17 @@ lib_path="$this_path/lib"
 
 mkdir "$lib_path"
 
-echo "installing libmagic and crystal..."
+echo "installing libmagic, crystal, zlib, bzip2..."
 if command_exists brew; then
-  brew install crystal-lang libmagic
+  brew install crystal-lang libmagic zlib bzip2
 else
   echo "enter password to install with apt or ctrl-c to do it yourself..."
   curl https://dist.crystal-lang.org/apt/setup.sh | sudo bash
   sudo apt-get install libmagic crystal libyaml-dev libxml2-dev libmagic-dev
 fi
+
+echo "installing shards..."
+shards install
 
 echo "testing..."
 "$this_path/scripts/test"
