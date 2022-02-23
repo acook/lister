@@ -51,8 +51,12 @@ module Lister
       end
 
       # inject the color codes so we don't have to worry about them earlier
-      info = info.insert post_sigil, color(entry)
-      info = info.insert pre_sigil, attr_color(entry)
+      if post_sigil < info.size
+        info = info.insert post_sigil, color(entry)
+      end
+      if pre_sigil < info.size
+        info = info.insert pre_sigil, attr_color(entry)
+      end
 
       print color(entry), "\e[K" if options.full_line
       print indentation(indent), color(entry), info, options.theme.reset, "\n"
