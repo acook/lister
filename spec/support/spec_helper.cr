@@ -17,7 +17,7 @@ end
 macro capture_stderr(program)
   {%
     filename = "#{__DIR__}/../../tmp/capture_stderr.cr"
-    system("echo #{program} > #{filename}")
+    system("echo #{program.gsub(/\\n/, "\n")} > #{filename}")
   %}
   {{
     system("crystal run #{filename} 2>&1 > /dev/null").stringify
