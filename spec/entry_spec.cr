@@ -20,5 +20,15 @@ describe Lister::Entry do
     ensure
       system "rm #{nowhere}"
     end
+
+    pending "doesn't raise an error when access is denied to a directory" do
+      # create a directory with permissions that will break this
+      no_access_dir = "lister_test.tmp"
+      system "mkdir #{no_access_dir}"
+      system "chmod -x #{no_access_dir}"
+      # attempt to traverse it
+      e = new_entry(no_access_dir)
+      e.type.should eq "asdkjgsdfkjgf"
+    end
   end
 end
