@@ -1,4 +1,4 @@
-FROM crystallang/crystal:0.36.1-alpine
+FROM crystallang/crystal:latest-alpine
 WORKDIR /app
 COPY . .
 

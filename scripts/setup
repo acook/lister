@@ -15,6 +15,15 @@ mkdir "$lib_path"
 echo "installing libmagic, crystal, zlib, bzip2..."
 if command_exists brew; then
   brew install crystal-lang libmagic zlib bzip2
+
+  echo "bootstrapping docker..."
+  brew install virtualbox docker docker-machine
+  brew services restart docker-machine
+  docker-machine create --driver virtualbox default
+  eval "$(docker-machine env default)"
+  docker-machine regenerate-certs default
+  docker-machine restart
+  docker build .
 else
   echo "enter password to install with apt or ctrl-c to do it yourself..."
   curl https://dist.crystal-lang.org/apt/setup.sh | sudo bash
