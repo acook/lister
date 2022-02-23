@@ -72,6 +72,13 @@ module Lister
         # if we get here it's because we don't have the permissions
         #   to access this directory, set this so we can use it later
         @children_count = -1
+      rescue err : File::Error
+        msg = err.message
+        if !msg.nil? && msg.includes? "Operation not permitted"
+          @children_count = -1
+        else
+          raise err
+        end
       end
     end
 
