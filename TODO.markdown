@@ -12,7 +12,15 @@ Planned
 
 ### Core
 - Handle missing libmagic database
-- Include libmagic database in binary
+- (DONE) Include libmagic database in binary
+- Option to follow links
+- Option to display filesize
+- Option to display file analysis
+  - audio files (tag info, length, etc)
+  - image files (metadata)
+- Option to pull specific information already available (such as color depth, sample rate, etc)
+- Option to sort or filter by certain info
+- Option to display attributes, extended attributes, resource forks, alternate data streams
 
 ### Themer
 

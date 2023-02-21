@@ -10,6 +10,7 @@ module Lister
 
     property root : Entry
     property options : Options
+    @@registry = Set(UInt64).new
 
     def initialize(root, options)
       @root = root
@@ -17,21 +18,27 @@ module Lister
     end
 
     def render(parent_longest = 0)
-      render_recurse @root, options.recurse, parent_longest
+      output = String.new
+      recurse @root do
+        output += render_recurse(@root, options.recurse, parent_longest).to_s
+      end
+      print output
     end
 
     def render_recurse(entry, recurse_depth, parent_longest, indent = 0)
-      register_recurse entry do
-        line entry, parent_longest, indent
+      recurse_nest entry do
+        output = String.new
+        output += line entry, parent_longest, indent
         if entry.children.size > 0 && recurse_depth > 0
           entry.children.each do |child|
-            render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)
+            output += (render_recurse child, (recurse_depth - 1), entry.longest, (indent + 1)).to_s
           end
         end
+        output
       end
     end
 
-    def line(entry, longest, indent)
+    def line(entry, longest, indent) : String
       info = String.new
 
       info += entry.name
@@ -54,8 +61,8 @@ module Lister
       info = info.insert post_sigil, color(entry)
       info = info.insert pre_sigil, sigil_color(entry)
 
-      print color(entry), "\e[K" if options.full_line
-      print indentation(indent), color(entry), info, options.theme.reset, "\n"
+      info = color(entry) + "\e[K" + info if options.full_line
+      indentation(indent) + color(entry).to_s + info + options.theme.reset.to_s + "\n"
     end
 
     def just(len, fit, fill = " ")
@@ -108,17 +115,22 @@ module Lister
       options.terminal.width
     end
 
-    def register_recurse(entry)
+    def recurse(entry)
+      retval = yield
+      @@registry.clear
+      retval
+    end
+
+    def recurse_nest(entry)
+      reg = @@registry
       inode = entry.fp.inode
-
-      reg = @@registry ||= Set(UInt64).new
-
       if reg.includes? inode
-        "[RECURSIVE DIRECTORY #{entry.name}]"
+        "[RECURSIVE DIRECTORY #{entry.name}]\n"
       else
         reg << inode
         retval = yield
         reg.delete inode
+        @@registry = reg
         retval
       end
     end
