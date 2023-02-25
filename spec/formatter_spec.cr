@@ -1,6 +1,7 @@
 require "./spec_helper"
 require "../src/entry"
 require "../src/options"
+require "../src/formatter"
 
 def new_formatter(path, options = Lister::Options.new)
   Lister::Formatter.new(path, options)
