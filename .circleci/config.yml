@@ -16,15 +16,3 @@ workflows:
           executor:
             name: crystal/default
             tag: 1.6.0
-      - collect-artifacts
-
-jobs:
-  collect-artifacts:
-    docker:
-      # replace with your preferred image
-      - image: cimg/base:stable
-    steps:
-      - run: |
-          ls
-          ./scripts/ci 
-          cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
