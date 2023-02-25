@@ -25,6 +25,6 @@ jobs:
       - image: cimg/base:stable
     steps:
       - run: |
-          ./scripts/ci 
           ls
+          ./scripts/ci 
           cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
