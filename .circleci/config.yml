@@ -8,5 +8,15 @@ workflows:
           pre-steps:
             - run: apt-get update && apt-get install -y libmagic-dev
           format-check: false
+          name: test-on-locked-version
+          executor:
+            name: crystal/default
+            tag: 1.6.0
+      - artifacts:
+        - run
+          name: collect artifacts
+          command: |
+            ls
+            cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
 orbs:
   crystal: manastech/crystal@1.0
