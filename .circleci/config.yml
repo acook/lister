@@ -16,8 +16,6 @@ workflows:
           executor:
             name: crystal/default
             tag: 1.6.0
-  collect-artifacts-workflow:
-    jobs:
       - collect-artifacts
 
 jobs:
@@ -26,10 +24,7 @@ jobs:
       # replace with your preferred image
       - image: cimg/base:stable
     steps:
-      - crystal/with-shards-cache:
-          include-branch-in-cache-key: true 
-          steps: 
-            - run: |
-                ./scripts/ci 
-                ls
-                cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
+      - run: |
+          ./scripts/ci 
+          ls
+          cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
