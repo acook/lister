@@ -1,5 +1,9 @@
 ---
 version: 2.1
+
+orbs:
+  crystal: manastech/crystal@1.0
+
 workflows:
   version: 2
   build:
@@ -12,11 +16,20 @@ workflows:
           executor:
             name: crystal/default
             tag: 1.6.0
-      - artifacts:
-        - run:
-          name: collect artifacts
-          command: |
-            ls
-            cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
-orbs:
-  crystal: manastech/crystal@1.0
+  collect-artifacts-workflow:
+    jobs:
+      - collect-artifacts
+
+jobs:
+  collect-artifacts:
+    docker:
+      # replace with your preferred image
+      - image: cimg/base:stable
+    steps:
+      - crystal/with-shards-cache:
+          include-branch-in-cache-key: true 
+          steps: 
+            - run: |
+                ./scripts/ci 
+                ls
+                cp tmp/capture_stderr.cr /root/test-results/crystal-spec/
