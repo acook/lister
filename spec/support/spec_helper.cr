@@ -17,6 +17,7 @@ end
 macro capture_stderr(program)
   {% if env("CIRCLECI") %}
   puts "CircleCI breaks functionality this tests requires"
+  String.new
   {% else %}
 
   {%
